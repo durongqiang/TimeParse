@@ -1,0 +1,16 @@
+[
+  {"Regex":"(11|国庆|国庆节)","month":"10","day":"1"},
+  {"Regex":"(清明|清明节)","month":"4","day":"5"},
+  {"Regex":"(51|劳动节|劳动)","month":"5","day":"1"},
+  {"Regex":"(元旦)","month":"1","day":"1"},
+  {"Regex":"(双11|双十一)","month":"11","day":"11"},
+  {"Regex":"(圣诞|圣诞节)","month":"12","day":"25"},
+  {"Regex":"(双12|双十二)","month":"12","day":"12"},
+  {"Regex":"(中秋|中秋节)","month":"8","day":"15","isLunar":"true"},
+  {"Regex":"(春节|过年|大年初一|大年初1)","month":"1","day":"1","isLunar":"true"},
+  {"Regex":"(除夕|大年30|大年三十)","month":"12","day":"30","isLunar":"true"},
+  {"Regex":"(元宵|元宵节)","month":"1","day":"15","isLunar":"true"},
+  {"Regex":"(端午|端午节)","month":"5","day":"5","isLunar":"true"},
+  {"Regex":"(七夕|7夕)","month":"7","day":"7","isLunar":"true"},
+  {"Regex":"(重阳|重阳节)","month":"9","day":"9","isLunar":"true"}
+]
