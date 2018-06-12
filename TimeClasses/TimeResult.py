@@ -16,9 +16,9 @@ class TimeResult:
     singleTimePoint = TimePoint()
     #start and end 均为时间点
     startTimePoint,endTimePoint = TimePoint(),TimePoint()
-    def __init__(self,tu=None,isWeek=None):
+    def __init__(self,tu = None, tp1=None, tp2=None, isWeek=None):
              #采用list进行初始化,后接参数isWeek进行判断是否是周
-        if((tu.__class__ is list) and not (isWeek.__class__ is TimePoint) and isWeek is not None):
+        if(tu is not None and isWeek is not None ):
             #设置长度为6的存储单元
             time_unit = [None,None,None,None,None,None]
             #tu赋值到time_unit单元内
@@ -37,29 +37,28 @@ class TimeResult:
             if(not self.__isValidDate()):
                 self.isAccurateTo = None
             #类型为单个点的类型
-            self.singleTimePoint = TimePoint(tu,isWeek)
+            self.singleTimePoint = TimePoint(tu = tu,isWeek = isWeek)
             self.isTimePoint = True
             
         #第二种情况，两个时间点的数据类型
-        if((tu.__class__ is TimePoint) and (isWeek.__class__ is TimePoint)): #TO-DO: tp1 时间必须在 tp2 之前
-            print('mark')
-            self.startTimePoint = TimePoint(tu)
-            self.endTimePoint = TimePoint(isWeek)
+        if(tp1 is not None and tp2 is not None): #TO-DO: tp1 时间必须在 tp2 之前
+            self.startTimePoint = TimePoint(tp = tp1)
+            self.endTimePoint = TimePoint(tp = tp2)
             self.isTimeInterval = True
 
         #第三种情况，传入的参数仅一个时间点
-        if((tu.__class__ is TimePoint) and isWeek is None):
+        if(tp1 is not None and tp2 is None):
             if(tu.year is not None):
-                self.year,self.month,self.day = tu.year,tu.month,tu.day
-                self.hour,self.minute,self.second = tu.hour,tu.minute,tu.second
-                self.isAccurateTo = tu.isAccurateTo
-                self.singleTimePoint = TimePoint(tu)
+                self.year,self.month,self.day = tp1.year,tp1.month,tp1.day
+                self.hour,self.minute,self.second = tp1.hour,tp1.minute,tp1.second
+                self.isAccurateTo = tp1.isAccurateTo
+                self.singleTimePoint = TimePoint(tp = tp1)
                 self.isTimePoint = True
                 
     #判断值是否时有效的，类似于TimePointa,是一个内部方法，外部并不会使用，故不存在逻辑问题
     def __isValidDate(self):
         if(self.year is None):
-            print("This is a empty TimeResult.")
+            #print("This is a empty TimeResult.")
             return True
         if(self.year is not None):
             if(self.year < 0):
@@ -139,6 +138,3 @@ class TimeResult:
             raise IOError("IllegalArgumentException")
 
 
-tp1 = TimePoint([2018,6,7],1)
-tp2 = TimePoint([2018,6,17],1)
-sp = TimeResult(tp1,tp2)

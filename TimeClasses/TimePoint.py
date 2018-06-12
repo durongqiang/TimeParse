@@ -12,9 +12,9 @@ class TimePoint:
     season = None
     
     #构造函数，存在三种清理，依次进行判断处理
-    def __init__(self,tu=None,isWeek=None):
+    def __init__(self,tu=None,isWeek=None,tp  = None):
         #采用list进行初始化,后接参数isWeek进行判断是否是周
-        if((tu.__class__ is list) and isWeek is not None):
+        if(tu is not None and isWeek is not None):
             #设置长度为6的存储单元
             time_unit = [None,None,None,None,None,None]
             if(isWeek):
@@ -31,7 +31,10 @@ class TimePoint:
             if(isWeek):
                 self.isAccurateTo = 6
             else:
-                self.isAccurateTo = i
+                if(tu[i] is  -1):
+                    self.isAccurateTo = i-1
+                else:
+                    self.isAccurateTo = i
             #初始化年、月、日，时、分、秒
             self.year,self.month,self.day = time_unit[0],time_unit[1],time_unit[2]
             self.hour,self.minute,self.second = time_unit[3],time_unit[4],time_unit[5]
@@ -41,11 +44,11 @@ class TimePoint:
               
             
         #第二种构造情况，只有一个输入，且其为TimePoint类型
-        if((tu.__class__ is TimePoint) and  isWeek is None):
-            if(tu.isAccurateTo is not None):
-                self.isAccurateTo = tu.isAccurateTo
-                self.year,self.month,self.day = tu.year,tu.month,tu.day
-                self.hour,self.minute,self.second = tu.hour,tu.minute,tu.second
+        if(tp is not None):
+            if(tp.isAccurateTo is not None):
+                self.isAccurateTo = tp.isAccurateTo
+                self.year,self.month,self.day = tp.year,tp.month,tp.day
+                self.hour,self.minute,self.second = tp.hour,tp.minute,tp.second
 
             else:
                 pass
@@ -77,7 +80,7 @@ class TimePoint:
     #判断读入的时间是否是有效时间
     def isValidDate(self):
         if(self.year is None):
-            print("This is a empty TimePoint.")
+            #print("This is a empty TimePoint.")
             return True
         if(self.year is not None):
             if(self.year < 0):
@@ -146,3 +149,5 @@ class TimePoint:
             self.minute = val
         elif(timeUnit is 5 or timeUnit is 'second'):
             self.second = val
+
+

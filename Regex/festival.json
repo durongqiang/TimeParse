@@ -9,6 +9,7 @@
   {"Regex":"(中秋|中秋节)","month":"8","day":"15","isLunar":"true"},
   {"Regex":"(春节|过年|大年初一|大年初1)","month":"1","day":"1","isLunar":"true"},
   {"Regex":"(除夕|大年30|大年三十)","month":"12","day":"30","isLunar":"true"},
+  {"Regex":"(大年29|大年二十九)","month":"12","day":"29","isLunar":"true"},
   {"Regex":"(元宵|元宵节)","month":"1","day":"15","isLunar":"true"},
   {"Regex":"(端午|端午节)","month":"5","day":"5","isLunar":"true"},
   {"Regex":"(七夕|7夕)","month":"7","day":"7","isLunar":"true"},

@@ -1,9 +1,43 @@
 # -*- coding: utf-8 -*-
 
-from parser import parse
-
-testCases = [
-    # 表达式，标准答案，精确至，是否节日
-    ('2018年五月二十号', '2018年5月20号', 'day', None)
-]
+from parser import TimeParser
+af = TimeParser()
+print(af.parseTimeMain('上个周末').toString())
+print(af.parseTimeMain('下午六点到晚上八点').toString())
+print(af.parseTimeMain('两个礼拜前').toString())
+print(af.parseTimeMain('今年到后年').toString())
+print(af.parseTimeMain('月底').toString())
+print(af.parseTimeMain('年底').toString())
+print(af.parseTimeMain('4-7月').toString())
+print(af.parseTimeMain('19年6-10月').toString())
+print(af.parseTimeMain('二月2-4').toString())
+print(af.parseTimeMain('周末').toString())
+print(af.parseTimeMain('上周末').toString())
+print(af.parseTimeMain('下周到下下周').toString())
+print(af.parseTimeMain('今天晚上到后天').toString())
+print(af.parseTimeMain('明晚到明年').toString())
+print(af.parseTimeMain('下午六点').toString())
+print(af.parseTimeMain('下月底').toString())
+print(af.parseTimeMain('周末').toString())
+print(af.parseTimeMain('明年三月').toString())
+print(af.parseTimeMain('大年二十九').toString())
+print(af.parseTimeMain('三月初三').toString())
+print(af.parseTimeMain('二月廿四').toString())
+print(af.parseTimeMain('正月15').toString())
+print(af.parseTimeMain('八月十五').toString())
+print(af.parseTimeMain('农历八月十五').toString())
+print(af.parseTimeMain('周9').toString())
+print(af.parseTimeMain('2月39').toString())
+print(af.parseTimeMain('下个月').toString())
+print(af.parseTimeMain('本月末').toString())
+print(af.parseTimeMain('上上周九').toString())
+print(af.parseTimeMain('大大后天').toString())
+print(af.parseTimeMain('前天').toString())
+print(af.parseTimeMain('明天下午三点').toString())
+print(af.parseTimeMain('五月最后一天').toString())
+print(af.parseTimeMain('十号').toString())
+print(af.parseTimeMain('明年').toString())
+print(af.parseTimeMain('今晚').toString())
+print(af.parseTimeMain('去年冬季').toString())
+print(af.parseTimeMain('下下个星期').toString())
 

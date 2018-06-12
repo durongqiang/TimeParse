@@ -47,11 +47,11 @@ class TimeParser:
             splitResults = re.split(rule, timeString)
             ##如果前面是纯数字，后面的那个带单位，把单位也赋给前面
             if(re.search("^[\\d]+$",splitResults[0])):
-                temp = re.split("[\\d]+",splitResults[1])
+                temp = re.split("[\\d]+",splitResults[-1])
                 splitResults[0] = splitResults[0]+temp[len(temp) - 1]
             start = self.parseTimePoint(splitResults[0])
-            end = self.__parseTimePoint(splitResults[1], start)
-            timeResult = TimeResult(start,end)
+            end = self.__parseTimePoint(splitResults[-1], start)
+            timeResult = TimeResult(tp1=start,tp2=end)
         ## 周末，早上这种，先把短语替换成“xx到xx”这种，再按时间段解析
         rule = self.__regexMap['isTermInterval']
         if(re.search(rule,timeString)):
@@ -101,7 +101,6 @@ class TimeParser:
         self.__rawTimeExpression = preHandling(timeString)
 
         self.__mainParseProcess()
-
         ##self.__tp 中已经有解析好的前面背景时间点
         ##查json调取timeString对应的两个时间点
         for i in range(0,len(self.__intervalJsonArray)):
@@ -112,10 +111,44 @@ class TimeParser:
                 startTPstr = prefix + template['start']
                 endTPstr = prefix + template['end']
                 startTP = self.__parseTimePoint(startTPstr, self.__tp)
-                endTP = self.__parseTimePoint(endTPstr, self.__tp)
-                af = TimeResult(startTP, endTP)
+
+                endTP = self.__parseTimePoint(endTPstr, startTP)
+                endTP = self.__checckBefore(startTP,endTP)
+                af = TimeResult(tp1=startTP, tp2=endTP)
+
                 return af
         return TimeResult()
+
+
+    def __checckBefore(self,tp1,tp2):
+        if(tp1.year <tp2.year):
+            return tp2
+        if(tp1.year> tp2.year):
+            tp2.setUnitValue('year',tp1.year)
+        if(tp1.isAccurateTo is 0):
+            tp2.setUnitValue('year',tp2.year+1)
+            return tp2
+        if(tp1.month<tp2.month):
+            return tp2
+        if(tp1.month>tp2.month):
+            tp2.setUnitValue('year',tp2.year+1)
+            return tp2
+        if(tp1.isAccurateTo is 1):
+            tp2.setUnitValue('month',tp2.month+1)
+            if (tp2.month > 12):
+                tp2.setUnitValue('year', tp2.year + 1)
+                tp2.setUnitValue('month', 1)
+            return tp2
+        if(tp1.day < tp2.day):
+            return tp2
+        if(tp1.day > tp2.day):
+            tp2.setUnitValue('month',tp2.month+1)
+            if (tp2.month > 12):
+                tp2.setUnitValue('year', tp2.year + 1)
+                tp2.setUnitValue('month', 1)
+            return tp2
+        return tp2
+
 
 ## 带有上文信息的时间解析，通常用在时间段解析的结束时间解析，开始时间为上文信息
 # @param timeString 为string类型，context 为imePointT类型
@@ -135,10 +168,11 @@ class TimeParser:
             for i in range(0, 6):
                 self.__timeBaseArray[i] = newTimeBase[i]
 
+
         self.__rawTimeExpression = preHandling(timeString)
         ##如果当前字符串只是一个数字，则用这个值替换上文的最后一位有效时间
         if(re.search("^[\\d]+$",timeString)):
-            endTP = TimePoint(context)
+            endTP = TimePoint(tp=context)
             endTP.setUnitValue(context.isAccurateTo,int(timeString))
             return endTP
 
@@ -630,7 +664,10 @@ class TimeParser:
                 context_year,context_month = self.__timeBaseArray[0],self.__timeBaseArray[1]
                 if(self.__time_temp[1] is not -1): #某月最后一天，优先用time_temp赋值
                     context_year,context_month = self.__time_temp[0],self.__time_temp[1]
+                if(context_year is -1):
+                    context_year = self.__timeBaseArray[0]
                 new_date = datetime(context_year,context_month,1)
+                new_date = new_date + relativedelta(months=1)
                 new_date = new_date - relativedelta(days=1)
                 time_fin = new_date.strftime('%Y-%m-%d').split('-')
                 time_fin = [int(i) for i in time_fin]
@@ -651,11 +688,12 @@ class TimeParser:
         re_match = re.search(rule, self.__rawTimeExpression)
         if (re_match):
             strArr = re.split("(月初?)|(大年初?)",re_match.group())
-            if(strArr[0] is "腊"):
+            if(strArr[0] is "腊" or ('大年'in re_match.group() and '大年初' not in re_match.group())):
                 month_lunar = 12
             else:
                 month_lunar = 1
-            day_lunar = int(strArr[1])
+
+            day_lunar = int(strArr[-1])
             self.__isLunarDate = True
             #几月廿几，农历特有
         rule = self.__regexMap["lunar_mm2d"]
@@ -726,7 +764,7 @@ class TimeParser:
             if(self.__time_temp[i]<0):
                 self.__time_temp[i] = self.__timeBaseArray[i]
 
-        self.__tp = TimePoint(self.__time_temp,self.__isWeek)
+        self.__tp = TimePoint(tu=self.__time_temp,isWeek=self.__isWeek)
         self.__time_parsing_result_str = self.__tp.toString()
 
 # 如果用户选项是倾向于未来时间，检查int的checkTimeIndex所指的时间是否是过去的时间，如果是的话，将大一级的时间设为当前时间的+1。
@@ -739,20 +777,25 @@ class TimeParser:
         if(not self.__isPreferFuture):
             return
         curTime = self.__timeBaseArray[checkTimeIndex]
-        if(curTime < self.__time_temp[checkTimeIndex] or self.__time_temp[checkTimeIndex] == -1):
+        if(curTime <= self.__time_temp[checkTimeIndex] or self.__time_temp[checkTimeIndex] == -1):
             return
 ####确认一下timeBaseArray是不是当前时间的存储数组####
-        now_time = datetime(self.__timeBaseArray[0], self.__timeBaseArray[1], self.__timeBaseArray[2]
-                , self.__timeBaseArray[3], self.__timeBaseArray[4], self.__timeBaseArray[5])
         if(checkTimeIndex == 1):
+            now_time = datetime(self.__timeBaseArray[0], 1, 1)
             now_time = now_time + relativedelta(years=1)
         elif(checkTimeIndex == 2):
+            now_time = datetime(self.__timeBaseArray[0], self.__timeBaseArray[1], 1)
             now_time = now_time + relativedelta(months=1)
         elif(checkTimeIndex == 3):
+            now_time = datetime(self.__timeBaseArray[0], self.__timeBaseArray[1], self.__timeBaseArray[2])
             now_time = now_time + relativedelta(days=1)
         elif(checkTimeIndex == 4):
+            now_time = datetime(self.__timeBaseArray[0], self.__timeBaseArray[1], self.__timeBaseArray[2]
+                                , self.__timeBaseArray[3])
             now_time = now_time + relativedelta(hours=1)
         elif(checkTimeIndex == 5):
+            now_time = datetime(self.__timeBaseArray[0], self.__timeBaseArray[1], self.__timeBaseArray[2]
+                                , self.__timeBaseArray[3], self.__timeBaseArray[4])
             now_time = now_time+relativedelta(minutes=1)
         time_add= now_time.strftime('%Y-%m-%d-%H-%M-%S').split('-')
         time_add = [int(i) for i in time_add]
@@ -782,10 +825,50 @@ class TimeParser:
         #准备增加的时间单位是被检查的时间的上一级，将上一级时间 + 1
         c = c + relativedelta(weeks=1)
         return c
-
-
+#test
+'''
 af = TimeParser()
-print(af.parseTimeMain('本周末').toString())
-tp1 = TimePoint([2018,6,7],1)
-tp2 = TimePoint([2018,6,17],1)
-sp = TimeResult(tp1,tp2)
+print(af.parseTimeMain('上个周末').toString())
+print(af.parseTimeMain('下午六点到晚上八点').toString())
+print(af.parseTimeMain('两个礼拜前').toString())
+print(af.parseTimeMain('今年到后年').toString())
+print(af.parseTimeMain('月底').toString())
+print(af.parseTimeMain('年底').toString())
+print(af.parseTimeMain('4-7月').toString())
+print(af.parseTimeMain('19年6-10月').toString())
+print(af.parseTimeMain('二月2-4').toString())
+print(af.parseTimeMain('周末').toString())
+print(af.parseTimeMain('上周末').toString())
+print(af.parseTimeMain('下周到下下周').toString())
+print(af.parseTimeMain('今天晚上到后天').toString())
+print(af.parseTimeMain('明晚到明年').toString())
+print(af.parseTimeMain('下午六点').toString())
+print(af.parseTimeMain('下月底').toString())
+print(af.parseTimeMain('周末').toString())
+print(af.parseTimeMain('明年三月').toString())
+print(af.parseTimeMain('大年二十九').toString())
+print(af.parseTimeMain('三月初三').toString())
+print(af.parseTimeMain('二月廿四').toString())
+print(af.parseTimeMain('正月15').toString())
+print(af.parseTimeMain('八月十五').toString())
+print(af.parseTimeMain('农历八月十五').toString())
+print(af.parseTimeMain('周9').toString())
+print(af.parseTimeMain('2月39').toString())
+print(af.parseTimeMain('下个月').toString())
+print(af.parseTimeMain('本月末').toString())
+print(af.parseTimeMain('上上周九').toString())
+print(af.parseTimeMain('大大后天').toString())
+print(af.parseTimeMain('前天').toString())
+print(af.parseTimeMain('明天下午三点').toString())
+print(af.parseTimeMain('五月最后一天').toString())
+print(af.parseTimeMain('十号').toString())
+print(af.parseTimeMain('明年').toString())
+print(af.parseTimeMain('今晚').toString())
+print(af.parseTimeMain('去年冬季').toString())
+print(af.parseTimeMain('下下个星期').toString())
+'''
+
+
+
+
+
