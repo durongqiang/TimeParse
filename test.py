@@ -1,43 +1,51 @@
 # -*- coding: utf-8 -*-
 
-from parser import TimeParser
-af = TimeParser()
-print(af.parseTimeMain('上个周末').toString())
-print(af.parseTimeMain('下午六点到晚上八点').toString())
-print(af.parseTimeMain('两个礼拜前').toString())
-print(af.parseTimeMain('今年到后年').toString())
-print(af.parseTimeMain('月底').toString())
-print(af.parseTimeMain('年底').toString())
-print(af.parseTimeMain('4-7月').toString())
-print(af.parseTimeMain('19年6-10月').toString())
-print(af.parseTimeMain('二月2-4').toString())
-print(af.parseTimeMain('周末').toString())
-print(af.parseTimeMain('上周末').toString())
-print(af.parseTimeMain('下周到下下周').toString())
-print(af.parseTimeMain('今天晚上到后天').toString())
-print(af.parseTimeMain('明晚到明年').toString())
-print(af.parseTimeMain('下午六点').toString())
-print(af.parseTimeMain('下月底').toString())
-print(af.parseTimeMain('周末').toString())
-print(af.parseTimeMain('明年三月').toString())
-print(af.parseTimeMain('大年二十九').toString())
-print(af.parseTimeMain('三月初三').toString())
-print(af.parseTimeMain('二月廿四').toString())
-print(af.parseTimeMain('正月15').toString())
-print(af.parseTimeMain('八月十五').toString())
-print(af.parseTimeMain('农历八月十五').toString())
-print(af.parseTimeMain('周9').toString())
-print(af.parseTimeMain('2月39').toString())
-print(af.parseTimeMain('下个月').toString())
-print(af.parseTimeMain('本月末').toString())
-print(af.parseTimeMain('上上周九').toString())
-print(af.parseTimeMain('大大后天').toString())
-print(af.parseTimeMain('前天').toString())
-print(af.parseTimeMain('明天下午三点').toString())
-print(af.parseTimeMain('五月最后一天').toString())
-print(af.parseTimeMain('十号').toString())
-print(af.parseTimeMain('明年').toString())
-print(af.parseTimeMain('今晚').toString())
-print(af.parseTimeMain('去年冬季').toString())
-print(af.parseTimeMain('下下个星期').toString())
+
+testCases = [
+    # 表达式，标准答案，精确至，是否节日
+    ('2018年五月二十号', '2018年5月20号', 'day', None),
+    ('20一8年五月二十号', '-', 'day', None),
+    ('下个月的7号', '-', 'day', None),
+    ('下个月7号', '-', 'day', None),
+    ('明天', '-', 'day', None),
+    ('两个礼拜前', '-', 'day', None),
+    ('下午六点到晚上八点', '-', 'day', None),
+    ('今年到后年', '-', 'day', None),
+    ('月底', '-', 'day', None),
+    ('年底', '-', 'day', None),
+    ('4-7月', '-', 'day', None),
+    ('19年6-10月', '-', 'day', None),
+    ('二月2-4', '-', 'day', None),
+    ('周末', '-', 'day', None),
+    ('上周末', '-', 'day', None),
+    ('下周到下下周', '-', 'day', None),
+    ('今天晚上到后天', '-', 'day', None),
+    ('明晚到明年', '-', 'day', None),
+    ('下午六点', '-', 'day', None),
+    ('下月底', '-', 'day', None),
+    ('明年三月', '-', 'day', None),
+    ('大年二十九', '-', 'day', None),
+    ('三月初三', '-', 'day', None),
+    ('二月廿四', '-', 'day', None),
+    ('正月15', '-', 'day', None),
+    ('八月十五', '-', 'day', None),
+    ('农历八月十五', '-', 'day', None),
+    ('周9', '-', 'day', None),
+    ('2月39', '-', 'day', None),
+    ('下个月', '-', 'day', None),
+    ('本月末', '-', 'day', None),
+    ('上上周九', '-', 'day', None),
+    ('大大后天', '-', 'day', None),
+    ('前天', '-', 'day', None),
+    ('明天下午三点', '-', 'day', None),
+    ('五月最后一天', '-', 'day', None),
+    ('十号', '-', 'day', None),
+    ('今晚', '-', 'day', None),
+    ('去年冬季', '-', 'day', None),
+    ('国庆', '-', 'day', None),
+    ('中秋', '-', 'day', None),
+    ('圣诞', '-', 'day', None),
+    ('1月1号', '-', 'day', None),
+    ('今年清明', '-', 'day', None)
+]
 
