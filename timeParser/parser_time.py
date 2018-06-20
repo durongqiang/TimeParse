@@ -5,11 +5,11 @@ from datetime import datetime, timedelta
 
 from dateutil.relativedelta import relativedelta
 
-from TimeClasses.LunarSolarConverter import Lunar, Solar, LunarSolarConverter
-from TimeClasses.StringPreHandlingModule import preHandling
-from TimeClasses.TimePoint import TimePoint
-from TimeClasses.TimeResult import TimeResult
-from TimeClasses.get_file_path import read_Regex_file
+from timeParser.LunarSolarConverter import Lunar, Solar, LunarSolarConverter
+from timeParser.StringPreHandlingModule import preHandling
+from timeParser.TimePoint import TimePoint
+from timeParser.TimeResult import TimeResult
+from timeParser.get_file_path import read_Regex_file
 
 
 class TimeParser:
@@ -860,45 +860,3 @@ class TimeParser:
         else:
             c = c + relativedelta(weeks=1)
             return c
-
-# test
-
-# af = TimeParser()
-# print(af.parseTimeMain(u'2020年清明').toString())
-# print(af.parseTimeMain(u'下午六点到晚上八点').toString())
-# print(af.parseTimeMain(u'两个礼拜前').toString())
-# print(af.parseTimeMain(u'今年到后年').toString())
-# print(af.parseTimeMain(u'月底').toString())
-# print(af.parseTimeMain(u'年底').toString())
-# print(af.parseTimeMain(u'4-7月').toString())
-# print(af.parseTimeMain(u'19年6-10月').toString())
-# print(af.parseTimeMain(u'二月2-4').toString())
-# print(af.parseTimeMain(u'周末').toString())
-# print(af.parseTimeMain(u'上周末').toString())
-# print(af.parseTimeMain(u'下周到下下周').toString())
-# print(af.parseTimeMain(u'今天晚上到后天').toString())
-# print(af.parseTimeMain(u'明晚到明年').toString())
-# print(af.parseTimeMain(u'下午六点').toString())
-# print(af.parseTimeMain(u'下月底').toString())
-# print(af.parseTimeMain(u'周末').toString())
-# print(af.parseTimeMain(u'明年三月').toString())
-# print(af.parseTimeMain(u'大年二十九').toString())
-# print(af.parseTimeMain(u'三月初三').toString())
-# print(af.parseTimeMain(u'二月廿四').toString())
-# print(af.parseTimeMain(u'正月15').toString())
-# print(af.parseTimeMain(u'八月十五').toString())
-# print(af.parseTimeMain(u'农历八月十五').toString())
-# print(af.parseTimeMain(u'周9').toString())
-# print(af.parseTimeMain(u'2月39').toString())
-# print(af.parseTimeMain(u'下个月').toString())
-# print(af.parseTimeMain(u'本月末').toString())
-# print(af.parseTimeMain(u'上上周九').toString())
-# print(af.parseTimeMain(u'大大后天').toString())
-# print(af.parseTimeMain(u'前天').toString())
-# print(af.parseTimeMain(u'明天下午三点').toString())
-# print(af.parseTimeMain(u'五月最后一天').toString())
-# print(af.parseTimeMain(u'十号').toString())
-# print(af.parseTimeMain(u'明年').toString())
-# print(af.parseTimeMain(u'今晚').toString())
-# print(af.parseTimeMain(u'去年冬季').toString())
-# print(af.parseTimeMain(u'下下个星期').toString())

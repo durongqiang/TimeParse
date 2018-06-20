@@ -9,8 +9,8 @@ from datetime import datetime
 
 from dateutil.relativedelta import relativedelta
 
-from TimeClasses.LunarSolarConverter import Lunar, LunarSolarConverter
-from TimeClasses.parser_time import TimeParser
+from timeParser.LunarSolarConverter import Lunar, LunarSolarConverter
+from timeParser.parser_time import TimeParser
 
 
 # get_qingming_day方法得到每一年清明的阳历日

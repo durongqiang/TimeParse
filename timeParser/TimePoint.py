@@ -255,8 +255,3 @@ class TimePoint:
                 return
             else:
                 raise ValueError("Can't add or subtract seconds.Please check the object precise range.\n")
-
-# aff = TimePoint(tu = [2018,6,17],isWeek = 0)
-# print(aff.isAccurateTo)
-# aff.addTime(month=12,hour=12)
-# print(aff.toString())

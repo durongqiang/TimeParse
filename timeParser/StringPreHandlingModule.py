@@ -10,25 +10,25 @@ import re
 
 
 def wordToNumber(s):
-    if s == (u"零") or s == (u"0"):
+    if s == u'零' or s == u'0':
         return 0
-    elif s == (u"一") or s == (u"1"):
+    elif s == u'一' or s == u'1':
         return 1
-    elif s == (u"二") or s == (u"两") or s == (u"2"):
+    elif s == u'二' or s == u'两' or s == u'2':
         return 2
-    elif s == (u"三") or s == (u"3"):
+    elif s == u'三' or s == u'3':
         return 3
-    elif s == (u"四") or s == (u"4"):
+    elif s == u'四' or s == u'4':
         return 4
-    elif s == (u"五") or s == (u"5"):
+    elif s == u'五' or s == u'5':
         return 5
-    elif s == (u"六") or s == (u"6"):
+    elif s == u'六' or s == u'6':
         return 6
-    elif s == (u"七") or s == (u"天") or s == (u"日") or s == (u"末") or s == (u"7"):
+    elif s == u'七' or s == u'天' or s == u'日' or s == u'末' or s == u'7':
         return 7
-    elif s == (u"八") or s == (u"8"):
+    elif s == u'八' or s == u'8':
         return 8
-    elif s == (u"九") or s == (u"9"):
+    elif s == u'九' or s == u'9':
         return 9
     else:
         return -1
@@ -36,8 +36,8 @@ def wordToNumber(s):
 
 '''
      * 该方法可以将字符串中所有的用汉字表示的数字转化为用阿拉伯数字表示的数字
-     * 如"这里有一千两百个人，六百零五个来自中国"可以转化为
-     * "这里有1200个人，605个来自中国"
+     * 如'这里有一千两百个人，六百零五个来自中国'可以转化为
+     * '这里有1200个人，605个来自中国'
      * 此外添加支持了部分不规则表达方法
      * 如两万零六百五可转化为20650
      * 两百一十四和两百十四都可以转化为214
@@ -56,7 +56,7 @@ def numberTranslator(target):
     while cond is not None:
         tem_str = cond.group()
         num = 0
-        tem_str = tem_str.split(u"万")
+        tem_str = tem_str.split(u'万')
         if tem_str.__len__() == 2:
             num = num + wordToNumber(tem_str[0]) * 10000 + wordToNumber(tem_str[1]) * 1000
         target = target[0:cond.span()[0]] + str(num) + target[cond.span()[1]:len(target)]
@@ -67,7 +67,7 @@ def numberTranslator(target):
     while cond is not None:
         tem_str = cond.group()
         num = 0
-        tem_str = tem_str.split(u"千")
+        tem_str = tem_str.split(u'千')
         if tem_str.__len__() == 2:
             num = num + wordToNumber(tem_str[0]) * 1000 + wordToNumber(tem_str[1]) * 100
         target = target[0:cond.span()[0]] + str(num) + target[cond.span()[1]:len(target)]
@@ -78,22 +78,21 @@ def numberTranslator(target):
     while cond is not None:
         tem_str = cond.group()
         num = 0
-        tem_str = tem_str.split(u"百")
+        tem_str = tem_str.split(u'百')
         if tem_str.__len__() == 2:
             num = num + wordToNumber(tem_str[0]) * 100 + wordToNumber(tem_str[1]) * 10
         target = target[0:cond.span()[0]] + str(num) + target[cond.span()[1]:len(target)]
         cond = re.search(u'[一二两三四五六七八九123456789]百[一二两三四五六七八九123456789](?!十)', target)
 
     # 处理大写转化为小写
-    rule = u"[零一二两三四五六七八九]"
+    rule = u'[零一二两三四五六七八九]'
 
     for each in re.finditer(rule, target):
-        ss = each.group()
         temp = str(wordToNumber(each.group()))
         target = target[0:each.span()[0]] + str(temp) + target[each.span()[1]:len(target)]
 
     # 处理周天，星期天替换为周7，星期7的情况
-    for each in re.finditer(u"(?<=(周))[天日]|(?<=(星期))[天日]", target):
+    for each in re.finditer(u'(?<=(周))[天日]|(?<=(星期))[天日]', target):
         temp = str(wordToNumber(each.group()))
         target = target[0:each.span()[0]] + str(temp) + target[each.span()[1]:len(target)]
 
@@ -105,8 +104,7 @@ def numberTranslator(target):
     while cond is not None:
         tem_str = cond1.group()
         num = 0
-        tem_str = tem_str.split(u"十")
-        # print(tem_str)
+        tem_str = tem_str.split(u'十')
         if tem_str.__len__() == 0:
             num = num + 10
         elif tem_str.__len__() == 1:
@@ -135,7 +133,7 @@ def numberTranslator(target):
     while cond is not None:
         tem_str = cond.group()
         num = 0
-        tem_str = tem_str.split(u"百")
+        tem_str = tem_str.split(u'百')
         if tem_str.__len__() == 1:
             num = num + int(tem_str[0]) * 100
         elif tem_str.__len__() == 2:
@@ -151,7 +149,7 @@ def numberTranslator(target):
     while cond is not None:
         tem_str = cond.group()
         num = 0
-        tem_str = tem_str.split(u"百")
+        tem_str = tem_str.split(u'百')
         if tem_str.__len__() == 1:
             num = num + int(tem_str[0]) * 100
         elif tem_str.__len__() == 2:
@@ -167,7 +165,7 @@ def numberTranslator(target):
     while cond is not None:
         tem_str = cond.group()
         num = 0
-        tem_str = tem_str.split(u"千")
+        tem_str = tem_str.split(u'千')
         if tem_str.__len__() == 1:
             num = num + int(tem_str[0]) * 1000
         elif tem_str.__len__() == 2:
@@ -183,7 +181,7 @@ def numberTranslator(target):
     while cond is not None:
         tem_str = cond.group()
         num = 0
-        tem_str = tem_str.split(u"万")
+        tem_str = tem_str.split(u'万')
         if tem_str.__len__() == 1:
             num = num + int(tem_str[0]) * 10000
         elif tem_str.__len__() == 2:
@@ -223,25 +221,23 @@ def delKeyword(target, rules):
 
 
 def preHandling(target):
-    # target = target.decode('utf-8')
-    rules = u"\\s+"
+    rules = u'\\s+'
     target = delKeyword(target, rules)
-    rules = u"[的]+"
+    rules = u'[的]+'
     target = delKeyword(target, rules)
 
     target = numberTranslator(target)
 
     # 替换掉,.这类符号
-    p = re.compile(u".*(，|,)\.*")
+    p = re.compile(u'.*(，|,)\.*')
     if p.search(target):
-        target = re.sub(u"(，|,|\.)", '', target)
-    # print(target)
+        target = re.sub(u'(，|,|\.)', '', target)
     # 替换掉上1个和下1个,替换为上个和下个
-    p = re.compile(u"下1个")
+    p = re.compile(u'下1个')
     if p.search(target):
-        target = re.sub(u"下1个", u'下个', target)
+        target = re.sub(u'下1个', u'下个', target)
 
-    p = re.compile(u"上1个")
+    p = re.compile(u'上1个')
     if p.search(target):
-        target = re.sub(u"上1个", u'下个', target)
+        target = re.sub(u'上1个', u'下个', target)
     return target
