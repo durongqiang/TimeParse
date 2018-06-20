@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from LunarSolarConverter import Lunar, Solar, LunarSolarConverter
+from .LunarSolarConverter import Lunar, Solar, LunarSolarConverter
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 import json

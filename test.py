@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
 from datetime import datetime
+import sys
 from dateutil.relativedelta import relativedelta
 from TimeClasses.LunarSolarConverter import Lunar, Solar, LunarSolarConverter
-from parser_time import TimeParser
+from TimeClasses.parser_time import TimeParser
 
 
 # get_qingming_day方法得到每一年清明的阳历日
@@ -282,19 +287,23 @@ for idx, each in enumerate(testCases):
         qingming_day = get_qingming_day(time_now.year)
         temp = '{0}年4月{1}日'.format(time_now.year, qingming_day)
 
-    testCases[idx] = (testCases[idx][0], temp, testCases[idx][2], testCases[idx][3])
+    testCases[idx] = (testCases[idx][0].encode('utf-8'), temp.encode('utf-8'), testCases[idx][2], testCases[idx][3])
 
 # 进行测试
 af = TimeParser()
-for each in testCases:
-    result = af.parseTimeMain(each[0]).toString()
-    if (each[1] == ''):
-        if ('年' in result):
-            print('测试情况：', each[0], '\n结果：', result)
-            raise ValueError('测试没有通过')
-    else:
-        if (each[1] not in result):
-            print('测试情况：', each[1], '\n结果：', result)
-            raise ValueError('测试没有通过')
 
-print('测试通过\n')
+for (timeExpression, answer, _, _) in testCases:
+    result = af.parseTimeMain(timeExpression.decode('utf-8')).toString()
+    version_type = sys.version_info.major
+    if version_type == 3:
+        answer = answer.decode('utf-8')
+    if answer == '':
+        if (u'年' in result):
+            print(u'测试情况：', timeExpression, u'\n结果：', result)
+            raise ValueError(u'测试没有通过')
+    else:
+        if (answer not in result):
+            print(u'测试情况：', answer, u'\n结果：', result)
+            raise ValueError(u'测试没有通过')
+
+print(u'测试通过\n')

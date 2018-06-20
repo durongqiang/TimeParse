@@ -22,8 +22,8 @@ class TimeParser:
     __dateRex, __timeRex = '', ''
     __festivalJsonArray, __intervalJsonArray = [], []
     __regexMap = {}
-    '''初始化，对节日、时间、间隔等正则规格进行读入'''
 
+    # 初始化，对节日、时间、间隔等正则规格进行读入
     def __init__(self):
         self.__dateRex = read_Regex_file('DatefilePath')
         self.__timeRex = read_Regex_file('TimeFilePath')
@@ -169,7 +169,7 @@ class TimeParser:
 
         self.__rawTimeExpression = preHandling(timeString)
         ##如果当前字符串只是一个数字，则用这个值替换上文的最后一位有效时间
-        if (re.search("^[\\d]+$", timeString)):
+        if (re.search(u"^[\\d]+$", timeString)):
             endTP = TimePoint(tp=context)
             endTP.setUnitValue(context.isAccurateTo, int(timeString))
             return endTP
@@ -221,7 +221,7 @@ class TimeParser:
                         self.__isLunarDate = True
 
                 self.__time_temp[1] = int(month)
-                if (re.search("清明", patternString)):
+                if (re.search(u"清明", patternString)):
                     if (self.__time_temp[0] is not -1):
                         self.__time_temp[2] = int(math.floor((self.__time_temp[0] - 2000) * 0.2422 + 4.81) - (
                                 self.__time_temp[0] - 2000) // 4)
@@ -243,7 +243,7 @@ class TimeParser:
         re_match = re.search(rule, self.__rawTimeExpression)
         if (re_match):
             matchStr = re_match.group()
-            p = "(月|\\.|\\-|/)"
+            p = u"(月|\\.|\\-|/)"
             m = re.search(p, matchStr)
             if (m):
                 month = matchStr[0:m.span()[0]]
@@ -256,7 +256,7 @@ class TimeParser:
         re_match = re.search(rule, self.__rawTimeExpression)
         if (re_match):
             matchStr = re_match.group()
-            p = "(年|\\.|\\-)"
+            p = u"(年|\\.|\\-)"
             m = re.search(p, matchStr)
             if (m):
                 year = matchStr[0:m.span()[0]]
@@ -536,7 +536,7 @@ class TimeParser:
         re_match = re.search(rule, self.__rawTimeExpression)
         if (re_match):
             flag[1] = True
-            subMatch = re.search("上+", re_match.group())
+            subMatch = re.search(u"上+", re_match.group())
             if (subMatch):
                 num_increase_days = subMatch.span()[1] - subMatch.span()[0]
                 time_now = time_now - relativedelta(months=num_increase_days)
@@ -551,7 +551,7 @@ class TimeParser:
         re_match = re.search(rule, self.__rawTimeExpression)
         if (re_match):
             flag[1] = True
-            subMatch = re.search("下+", re_match.group())
+            subMatch = re.search(u"下+", re_match.group())
             if (subMatch):
                 num_increase_days = subMatch.span()[1] - subMatch.span()[0]
                 time_now = time_now + relativedelta(months=num_increase_days)
@@ -603,7 +603,7 @@ class TimeParser:
                     time_now = time_now - timedelta(days=time_now.isoweekday()) + relativedelta(days=weekday)
             else:
                 self.__isWeek = True
-            subMatch = re.search("上+", re_match.group())
+            subMatch = re.search(u"上+", re_match.group())
             if (subMatch):
                 num_decrease = subMatch.span()[1] - subMatch.span()[0]
                 time_now = time_now - relativedelta(weeks=num_decrease)
@@ -623,7 +623,7 @@ class TimeParser:
                     time_now = time_now - timedelta(days=time_now.isoweekday()) + relativedelta(days=weekday)
             else:
                 self.__isWeek = True
-            subMatch = re.search("下+", re_match.group())
+            subMatch = re.search(u"下+", re_match.group())
             if (subMatch):
                 num_decrease = subMatch.span()[1] - subMatch.span()[0]
                 time_now = time_now + relativedelta(weeks=num_decrease)
@@ -673,10 +673,12 @@ class TimeParser:
     # 识别农历日期#
     # 015
     def __norm_lunarCalendar(self):
+        month_lunar = -1
+        day_lunar = -1
         rule = self.__regexMap["lunar_mmdd"]
         re_match = re.search(rule, self.__rawTimeExpression)
         if (re_match):
-            strArr = re_match.group().split("月初")
+            strArr = re_match.group().split(u"月初")
             month_lunar = int(strArr[0])
             day_lunar = int(strArr[1])
             self.__isLunarDate = True
@@ -684,8 +686,8 @@ class TimeParser:
         rule = self.__regexMap["lunar_1mdd"]
         re_match = re.search(rule, self.__rawTimeExpression)
         if (re_match):
-            strArr = re.split("(月初?)|(大年初?)", re_match.group())
-            if (strArr[0] is "腊" or ('大年' in re_match.group() and '大年初' not in re_match.group())):
+            strArr = re.split(u"(月初?)|(大年初?)", re_match.group())
+            if (strArr[0] is u"腊" or (u'大年' in re_match.group() and u'大年初' not in re_match.group())):
                 month_lunar = 12
             else:
                 month_lunar = 1
@@ -696,7 +698,7 @@ class TimeParser:
         rule = self.__regexMap["lunar_mm2d"]
         re_match = re.search(rule, self.__rawTimeExpression)
         if (re_match):
-            strArr = re_match.group().split("月廿")
+            strArr = re_match.group().split(u"月廿")
             month_lunar = int(strArr[0])
             day_lunar = int(strArr[1])
             if (day_lunar is 10):
@@ -734,6 +736,21 @@ class TimeParser:
         self.__time_temp[1] = solar_res.solarMonth
         self.__time_temp[2] = solar_res.solarDay
 
+    def __norm_qinming(self):
+        rule = u'清明'
+        if (re.search(rule, self.__rawTimeExpression)):
+            if (self.__time_temp[0] is not -1):
+                year = self.__time_temp[0]
+                if (year > 1700 and year <= 3100):
+                    if (year == 2232):
+                        qingming_day = 4
+                    else:
+                        coefficient = [5.15, 5.37, 5.59, 4.82, 5.02, 5.26, 5.48, 4.70, 4.92, 5.135, 5.36, 4.60, 4.81,
+                                       5.04, 5.26]
+                        mod = year % 100
+                        qingming_day = int(mod * 0.2422 + coefficient[year // 100 - 17] - mod // 4)
+                    self.__time_temp[2] = qingming_day
+
     #
     # 时间表达式规范化的入口
     # 时间表达式识别后，通过此入口进入规范化阶段，
@@ -753,6 +770,7 @@ class TimeParser:
         self.__norm_setsecond()
         self.__norm_setTotal()
         self.__norm_lunarCalendar()
+        self.__norm_qinming()
         tunitpointer = 5
         while tunitpointer >= 0 and self.__time_temp[tunitpointer] < 0:
             tunitpointer = tunitpointer - 1
@@ -812,57 +830,51 @@ class TimeParser:
             if (self.__time_temp[i] is not -1):
                 return c
         now_time = datetime(self.__timeBaseArray[0], self.__timeBaseArray[1], self.__timeBaseArray[2])
-
-        currentWeekday = int(now_time.strftime('%w'))
-        ###这里是以周一为1，一次而来，周天为7
-        if (currentWeekday == 0):
-            currentWeekday = 7
-        if (currentWeekday < weekday):
+        cod = c - now_time
+        if (cod.days > 0):
             return c
-        # 准备增加的时间单位是被检查的时间的上一级，将上一级时间 + 1
-        c = c + relativedelta(weeks=1)
-        return c
-
+        else:
+            c = c + relativedelta(weeks=1)
+            return c
 
 # test
-'''
-af = TimeParser()
-print(af.parseTimeMain('上个周末').toString())
-print(af.parseTimeMain('下午六点到晚上八点').toString())
-print(af.parseTimeMain('两个礼拜前').toString())
-print(af.parseTimeMain('今年到后年').toString())
-print(af.parseTimeMain('月底').toString())
-print(af.parseTimeMain('年底').toString())
-print(af.parseTimeMain('4-7月').toString())
-print(af.parseTimeMain('19年6-10月').toString())
-print(af.parseTimeMain('二月2-4').toString())
-print(af.parseTimeMain('周末').toString())
-print(af.parseTimeMain('上周末').toString())
-print(af.parseTimeMain('下周到下下周').toString())
-print(af.parseTimeMain('今天晚上到后天').toString())
-print(af.parseTimeMain('明晚到明年').toString())
-print(af.parseTimeMain('下午六点').toString())
-print(af.parseTimeMain('下月底').toString())
-print(af.parseTimeMain('周末').toString())
-print(af.parseTimeMain('明年三月').toString())
-print(af.parseTimeMain('大年二十九').toString())
-print(af.parseTimeMain('三月初三').toString())
-print(af.parseTimeMain('二月廿四').toString())
-print(af.parseTimeMain('正月15').toString())
-print(af.parseTimeMain('八月十五').toString())
-print(af.parseTimeMain('农历八月十五').toString())
-print(af.parseTimeMain('周9').toString())
-print(af.parseTimeMain('2月39').toString())
-print(af.parseTimeMain('下个月').toString())
-print(af.parseTimeMain('本月末').toString())
-print(af.parseTimeMain('上上周九').toString())
-print(af.parseTimeMain('大大后天').toString())
-print(af.parseTimeMain('前天').toString())
-print(af.parseTimeMain('明天下午三点').toString())
-print(af.parseTimeMain('五月最后一天').toString())
-print(af.parseTimeMain('十号').toString())
-print(af.parseTimeMain('明年').toString())
-print(af.parseTimeMain('今晚').toString())
-print(af.parseTimeMain('去年冬季').toString())
-print(af.parseTimeMain('下下个星期').toString())
-'''
+
+# af = TimeParser()
+# print(af.parseTimeMain(u'2020年清明').toString())
+# print(af.parseTimeMain(u'下午六点到晚上八点').toString())
+# print(af.parseTimeMain(u'两个礼拜前').toString())
+# print(af.parseTimeMain(u'今年到后年').toString())
+# print(af.parseTimeMain(u'月底').toString())
+# print(af.parseTimeMain(u'年底').toString())
+# print(af.parseTimeMain(u'4-7月').toString())
+# print(af.parseTimeMain(u'19年6-10月').toString())
+# print(af.parseTimeMain(u'二月2-4').toString())
+# print(af.parseTimeMain(u'周末').toString())
+# print(af.parseTimeMain(u'上周末').toString())
+# print(af.parseTimeMain(u'下周到下下周').toString())
+# print(af.parseTimeMain(u'今天晚上到后天').toString())
+# print(af.parseTimeMain(u'明晚到明年').toString())
+# print(af.parseTimeMain(u'下午六点').toString())
+# print(af.parseTimeMain(u'下月底').toString())
+# print(af.parseTimeMain(u'周末').toString())
+# print(af.parseTimeMain(u'明年三月').toString())
+# print(af.parseTimeMain(u'大年二十九').toString())
+# print(af.parseTimeMain(u'三月初三').toString())
+# print(af.parseTimeMain(u'二月廿四').toString())
+# print(af.parseTimeMain(u'正月15').toString())
+# print(af.parseTimeMain(u'八月十五').toString())
+# print(af.parseTimeMain(u'农历八月十五').toString())
+# print(af.parseTimeMain(u'周9').toString())
+# print(af.parseTimeMain(u'2月39').toString())
+# print(af.parseTimeMain(u'下个月').toString())
+# print(af.parseTimeMain(u'本月末').toString())
+# print(af.parseTimeMain(u'上上周九').toString())
+# print(af.parseTimeMain(u'大大后天').toString())
+# print(af.parseTimeMain(u'前天').toString())
+# print(af.parseTimeMain(u'明天下午三点').toString())
+# print(af.parseTimeMain(u'五月最后一天').toString())
+# print(af.parseTimeMain(u'十号').toString())
+# print(af.parseTimeMain(u'明年').toString())
+# print(af.parseTimeMain(u'今晚').toString())
+# print(af.parseTimeMain(u'去年冬季').toString())
+# print(af.parseTimeMain(u'下下个星期').toString())

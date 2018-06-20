@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from TimePoint import TimePoint
+from .TimePoint import TimePoint
 import json
-from TimeResult import TimeResult
+from .TimeResult import TimeResult
 
 
 class TimeInterval:

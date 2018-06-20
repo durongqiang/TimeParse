@@ -2,7 +2,7 @@
 
 from datetime import datetime
 import json
-from TimePoint import TimePoint
+from .TimePoint import TimePoint
 
 
 class TimeResult:

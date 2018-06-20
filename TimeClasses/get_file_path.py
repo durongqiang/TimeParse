@@ -3,6 +3,7 @@
 import sys
 import os
 import json
+from io import open
 
 
 # 获取当前文档的绝对路径
@@ -18,7 +19,7 @@ def get_temp_file_path():
 
 # 读取配置文件当前路径绝对路径
 def get_confing_file_path(temp_file_path):
-    return get_temp_file_path() + 'config.properties'
+    return get_temp_file_path() + 'TimeClasses\\config.properties'
 
 
 # 按字符名字读取文件内路径名
@@ -31,7 +32,7 @@ def read_each_file_path(each_file_name):
             each_line = each_line.replace('\n', '')
             each_line = each_line.split('=')
             if (each_line[0] == each_file_name):
-                each_file_name_path = get_temp_file_path() + each_line[-1]
+                each_file_name_path = get_temp_file_path() +'TimeClasses\\'+ each_line[-1]
                 break
     # 判断得到的文件路径是否可进行读写操作,存在返回绝对路径名，不存在则输出文件不存在信息
     try:
