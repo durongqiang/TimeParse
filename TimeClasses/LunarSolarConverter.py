@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 
-
 class Lunar:
     def __init__(self, lunarYear, lunarMonth, lunarDay, isleap=False):
         self.isleap = isleap
@@ -190,6 +189,8 @@ class LunarSolarConverter:
 
     def __init__(self):
         pass
+
+
 '''
 构建LunarSolarConverter对象，传入lunar或solar
 采用LunarToSolar将lunar转化成solar
