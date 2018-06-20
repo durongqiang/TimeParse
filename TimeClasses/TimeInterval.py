@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from .TimePoint import TimePoint
-import json
 from .TimeResult import TimeResult
 
 
@@ -10,13 +9,13 @@ class TimeInterval:
     endTimePoint = TimePoint()
 
     def __init__(self, tp1=None, tp2=None):
-        if (isinstance(tp1, TimePoint) and isinstance(tp2, TimePoint)):
+        if isinstance(tp1, TimePoint) and isinstance(tp2, TimePoint):
             self.startTimePoint = TimePoint(tp=tp1)
             self.endTimePoint = TimePoint(tp=tp2)
 
         # 第二种情况，如果其传入为TimeResult类型，并且isTimeInterval 为真
-        if (isinstance(tp1, TimeResult) and tp2 is None):
-            if (tp1.isTimeInterval):
+        if isinstance(tp1, TimeResult) and tp2 is None:
+            if tp1.isTimeInterval:
                 self.startTimePoint = tp1.startTimePoint
                 self.endTimePoint = tp1.endTimePoint
             else:

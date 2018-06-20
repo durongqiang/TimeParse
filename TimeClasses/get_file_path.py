@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 
-import sys
-import os
 import json
+import os
 from io import open
 
 
@@ -31,8 +30,8 @@ def read_each_file_path(each_file_name):
         for each_line in config_file:
             each_line = each_line.replace('\n', '')
             each_line = each_line.split('=')
-            if (each_line[0] == each_file_name):
-                each_file_name_path = get_temp_file_path() +'TimeClasses\\'+ each_line[-1]
+            if each_line[0] == each_file_name:
+                each_file_name_path = get_temp_file_path() + 'TimeClasses\\' + each_line[-1]
                 break
     # 判断得到的文件路径是否可进行读写操作,存在返回绝对路径名，不存在则输出文件不存在信息
     try:
@@ -58,7 +57,7 @@ def read_timeRegexPath_file(each_file_name):
             for each_line in f:
                 each_line = each_line.split()
                 file_haspmap[each_line[0]] = each_line[-1]
-    if (file_haspmap == None):
+    if file_haspmap == None:
         print("this file is empty")
     return file_haspmap
 
@@ -112,13 +111,13 @@ def read_Festival_or_Interval_file(each_file_name):
 
 def read_Regex_file(each_file_name):
     read_Regex_result = None
-    if (each_file_name == 'timeRegexPath'):
+    if each_file_name == 'timeRegexPath':
         read_Regex_result = read_timeRegexPath_file(each_file_name)
         return read_Regex_result
-    elif (each_file_name == 'DatefilePath' or each_file_name == 'TimeFilePath'):
+    elif each_file_name == 'DatefilePath' or each_file_name == 'TimeFilePath':
         read_Regex_result = read_Date_or_Time_filePath_file(each_file_name)
         return read_Regex_result
-    elif (each_file_name == 'FestivalFilePath' or each_file_name == 'IntervalTermFilePath'):
+    elif each_file_name == 'FestivalFilePath' or each_file_name == 'IntervalTermFilePath':
         read_Regex_result = read_Festival_or_Interval_file(each_file_name)
         return read_Regex_result
     else:
