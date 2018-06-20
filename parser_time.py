@@ -224,13 +224,13 @@ class TimeParser:
                 if (re.search("清明", patternString)):
                     if (self.__time_temp[0] is not -1):
                         self.__time_temp[2] = int(math.floor((self.__time_temp[0] - 2000) * 0.2422 + 4.81) - (
-                                    self.__time_temp[0] - 2000) // 4)
+                                self.__time_temp[0] - 2000) // 4)
                     elif ((self.__timeBaseArray[1] * 100 + self.__timeBaseArray[2]) > 406):
                         self.__time_temp[2] = int(math.floor((self.__timeBaseArray[0] + 1 - 2000) * 0.2422 + 4.81) - (
-                                    self.__timeBaseArray[0] + 1 - 2000) // 4)
+                                self.__timeBaseArray[0] + 1 - 2000) // 4)
                     else:
                         self.__time_temp[2] = int(math.floor((self.__timeBaseArray[0] - 2000) * 0.2422 + 4.81) - (
-                                    self.__timeBaseArray[0] - 2000) // 4)
+                                self.__timeBaseArray[0] - 2000) // 4)
                 else:
                     self.__time_temp[2] = int(date)
                 self.__preferFuture(1)

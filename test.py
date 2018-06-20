@@ -283,6 +283,7 @@ for idx, each in enumerate(testCases):
         temp = '{0}年4月{1}日'.format(time_now.year, qingming_day)
 
     testCases[idx] = (testCases[idx][0], temp, testCases[idx][2], testCases[idx][3])
+
 # 进行测试
 af = TimeParser()
 for each in testCases:
