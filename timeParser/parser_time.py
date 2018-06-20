@@ -9,7 +9,7 @@ from timeParser.LunarSolarConverter import Lunar, Solar, LunarSolarConverter
 from timeParser.StringPreHandlingModule import preHandling
 from timeParser.TimePoint import TimePoint
 from timeParser.TimeResult import TimeResult
-from timeParser.get_file_path import read_Regex_file
+from timeParser.get_file_path import read_date_regex, read_festival_regex, read_time_regex, read_timeRegex_dict, read_interval_regex
 
 
 class TimeParser:
@@ -26,11 +26,11 @@ class TimeParser:
 
     # 初始化，对节日、时间、间隔等正则规格进行读入
     def __init__(self):
-        self.__dateRex = read_Regex_file('DatefilePath')
-        self.__timeRex = read_Regex_file('TimeFilePath')
-        self.__festivalJsonArray = read_Regex_file('FestivalFilePath')
-        self.__intervalJsonArray = read_Regex_file('IntervalTermFilePath')
-        self.__regexMap = read_Regex_file('timeRegexPath')
+        self.__dateRex = read_date_regex()
+        self.__timeRex = read_time_regex()
+        self.__festivalJsonArray = read_festival_regex()
+        self.__intervalJsonArray = read_interval_regex()
+        self.__regexMap = read_timeRegex_dict()
         # print(self.__dateRex)
 
     # * 新的时间解析入口
