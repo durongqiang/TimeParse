@@ -210,9 +210,9 @@ for idx, each in enumerate(testCases):
             result_time = tf_class.LunarToSolar(Lunar(time_now.year + 1, 8, 15))
         temp = '{0}年{1}月{2}日'.format(result_time.solarYear, result_time.solarMonth, result_time.solarDay)
     elif (idx == 27):
-        temp = ''
+        temp = u''
     elif (idx == 28):
-        temp = ''
+        temp = u''
     elif (idx == 29):
         time_now = datetime.now() + relativedelta(months=1)
         temp = '{0}年{1}月'.format(time_now.year, time_now.month)
@@ -223,7 +223,7 @@ for idx, each in enumerate(testCases):
         temp = '{3}年{4}月25日 ->>>>- {0}年{1}月{2}日'. \
             format(time_now.year, time_now.month, time_now.day, t2.year, t2.month)
     elif (idx == 31):
-        temp = ''
+        temp = u''
     elif (idx == 32):
         time_now = datetime.now() + relativedelta(days=4)
         temp = '{0}年{1}月{2}日'.format(time_now.year, time_now.month, time_now.day)
@@ -297,7 +297,7 @@ for (timeExpression, answer, _, _) in testCases:
     version_type = sys.version_info.major
     if version_type == 3:
         answer = answer.decode('utf-8')
-    if answer == '':
+    if answer is u'':
         if (u'年' in result):
             print(u'测试情况：', timeExpression, u'\n结果：', result)
             raise ValueError(u'测试没有通过')
