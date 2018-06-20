@@ -1,7 +1,23 @@
 # -*- coding: utf-8 -*-
-
+from LunarSolarConverter import Lunar, Solar, LunarSolarConverter
 from datetime import datetime,timedelta
+from dateutil.relativedelta import relativedelta
 import json
+#构建节日结合
+Solar_Festival = ('10-1','5-1','1-1','11-11','12-25','10-1')
+Lunar_Festival = ('1-1','12-30','1-15','5-5','7-7','9-9','8-15')
+#获得清明那天的节日
+def get_qingming_day(year):
+    if (year > 1700 and year <= 3100):
+        if (year == 2232):
+            qingming_day = 4
+        else:
+            coefficient = [5.15, 5.37, 5.59, 4.82, 5.02, 5.26, 5.48, 4.70, 4.92, 5.135, 5.36, 4.60, 4.81, 5.04, 5.26]
+            mod = year % 100
+            qingming_day = int(mod * 0.2422 + coefficient[year // 100 - 17] - mod // 4)
+        return qingming_day
+    else:
+        raise ValueError("Year out of conversion range")
 #类TimePoint的构建
 class TimePoint: 
     year,month,day,hour,minute,second = None,None,None,None,None,None 
@@ -150,4 +166,91 @@ class TimePoint:
         elif(timeUnit is 5 or timeUnit is 'second'):
             self.second = val
 
+    def isFestival(self):
+        #判断是不是合法的日期
+        if(self.isAccurateTo is None or self.isAccurateTo<2 or self.isAccurateTo == 6):
+            return False
+        #判断是不是清明
+        if(self.month == 4):
+            qingmingday = get_qingming_day(self.year)
+            if(qingmingday == self.day):
+                return True
+        #判断是不是在节假日字典当中
+        tf = LunarSolarConverter()
+        Lunar_day = tf.SolarToLunar(Solar(self.year,self.month,self.day))
+        format_str1 = "{0}-{1}".format(self.month,self.day)
+        format_str2 = "{0}-{1}".format(Lunar_day.lunarMonth, Lunar_day.lunarDay)
+        if(format_str1 in Solar_Festival or format_str2 in Lunar_Festival ):
+            return  True
+        else:
+            return  False
 
+#进行TimePoint的加法操作
+# 注意零时间不能和任意时间进行加减
+    def addTime(self,year=0,month = 0,day = 0,hour = 0,minute = 0,second = 0):
+        if(second is not 0):
+            if(self.isAccurateTo is not None and self.isAccurateTo == 5):
+                time_this = datetime(self.year,self.month,self.day,self.hour,self.minute,self.second)
+                time_this = time_this + relativedelta(years=year)+relativedelta(months=month)+relativedelta(days=day)\
+                            +relativedelta(hours=hour)+relativedelta(minutes=minute)+relativedelta(seconds=second)
+                temp = [int(each) for each in time_this.strftime('%Y-%m-%d-%H-%M-%S').split('-')]
+                self.year,self.month,self.day = temp[0],temp[1],temp[2]
+                self.hour,self.minute,self.second = temp[3],temp[4],temp[5]
+                return
+            else:
+                raise  ValueError("Can't add or subtract seconds.Please check the object precise range.\n")
+        if(minute is not 0):
+            if (self.isAccurateTo is not None and (self.isAccurateTo <= 5 and self.isAccurateTo >= 4)):
+                time_this = datetime(self.year, self.month, self.day, self.hour, self.minute)
+                time_this = time_this + relativedelta(years=year) + relativedelta(months=month) + relativedelta(days=day) \
+                            + relativedelta(hours=hour) + relativedelta(minutes=minute)
+                temp = [int(each) for each in time_this.strftime('%Y-%m-%d-%H-%M').split('-')]
+                self.year, self.month, self.day = temp[0], temp[1], temp[2]
+                self.hour, self.minute = temp[3], temp[4]
+                return
+            else:
+                raise ValueError("Can't add or subtract seconds.Please check the object precise range.\n")
+        if(hour is not 0):
+            if (self.isAccurateTo is not None and (self.isAccurateTo <= 5 and self.isAccurateTo >= 3)):
+                time_this = datetime(self.year, self.month, self.day, self.hour)
+                time_this = time_this + relativedelta(years=year) + relativedelta(months=month) + relativedelta(days=day) \
+                            + relativedelta(hours=hour)
+                temp = [int(each) for each in time_this.strftime('%Y-%m-%d-%H').split('-')]
+                self.year, self.month, self.day = temp[0], temp[1], temp[2]
+                self.hour = temp[3]
+                return
+            else:
+                raise ValueError("Can't add or subtract seconds.Please check the object precise range.\n")
+        if(day is not 0):
+            if (self.isAccurateTo is not None and (self.isAccurateTo <= 6 and self.isAccurateTo >= 2)):
+                time_this = datetime(self.year, self.month, self.day)
+                time_this = time_this + relativedelta(years=year) + relativedelta(months=month) + relativedelta(days=day)
+                temp = [int(each) for each in time_this.strftime('%Y-%m-%d').split('-')]
+                self.year, self.month, self.day = temp[0], temp[1], temp[2]
+                return
+            else:
+                raise ValueError("Can't add or subtract seconds.Please check the object precise range.\n")
+        if(month is not 0):
+            if (self.isAccurateTo is not None and (self.isAccurateTo <= 6 and self.isAccurateTo >= 1)):
+                time_this = datetime(self.year, self.month,1)
+                time_this = time_this + relativedelta(years=year) + relativedelta(months=month)
+                temp = [int(each) for each in time_this.strftime('%Y-%m-%d').split('-')]
+                self.year, self.month = temp[0], temp[1]
+                return
+            else:
+                raise ValueError("Can't add or subtract seconds.Please check the object precise range.\n")
+        if(year is not 0):
+            if (self.isAccurateTo is not None and (self.isAccurateTo <= 6 and self.isAccurateTo >= 0)):
+                time_this = datetime(self.year, 1,1)
+                time_this = time_this + relativedelta(years=year)
+                temp = [int(each) for each in time_this.strftime('%Y-%m-%d').split('-')]
+                self.year = temp[0]
+                return
+            else:
+                raise ValueError("Can't add or subtract seconds.Please check the object precise range.\n")
+
+
+# aff = TimePoint(tu = [2018,6,17],isWeek = 0)
+# print(aff.isAccurateTo)
+# aff.addTime(month=12,hour=12)
+# print(aff.toString())
