@@ -26,7 +26,7 @@ def get_qingming_day(year):
 
 testCases = [
     # 表达式，标准答案，精确至，是否节日
-    ('2018年五月二十号', '2018年5月20日', 'day', None),
+    ('2018/05/02', '2018年5月2日', 'day', None),
     ('20一8年五月二十号', '2018年5月20日', 'day', None),
     ('19年6-10月', '2019年6月 ->>>>- 2019年10月', 'month', None),
     ('下个月的7号', '-', 'day', None),
@@ -88,7 +88,7 @@ for idx, each in enumerate(testCases):
     elif (idx == 7):
         temp = [int(each) for each in datetime.now().strftime('%Y-%m-%d').split('-')]
         time_now = datetime.now() - datetime(temp[0], temp[1], temp[2], 18)
-        if (time_now.days >= 0):
+        if (time_now.days > 0):
             temp[2] = temp[2] + 1
         temp = '{0}年{1}月{2}日18时 ->>>>- {0}年{1}月{2}日20时'.format(temp[0], temp[1], temp[2])
     elif (idx == 8):

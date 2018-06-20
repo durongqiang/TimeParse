@@ -366,21 +366,34 @@ class TimeParser:
     # 该方法识别特殊形式的时间表达式单元的各个字段
     # 011#
     def __norm_setTotal(self):
+        #年:月:日 这样的情况，命名为cod1
+        rule = self.__regexMap["yyyy:mm:dd"]
+        temp = self.__rawTimeExpression
+        match_cod1= re.search(rule,temp)
+        if (match_cod1):
+            tmp_target = match_cod1.group()
+            tmp_parser = tmp_target.split(":")
+            self.__time_temp[0], self.__time_temp[1], self.__time_temp[2] = int(tmp_parser[0]), int(tmp_parser[1]), int(
+                tmp_parser[2])
+
+        # 时:分:秒 这样的情况，命名为cod2
         rule = self.__regexMap["yy_mm_dd"]
         temp = '?' + self.__rawTimeExpression
-        re_match = re.search(rule, temp)
-        if (re_match):
-            tmp_target = re_match.group()
+        re_match_cod2 = re.search(rule, temp)
+        cod2 = re_match_cod2 and match_cod1 is None
+        if (cod2):
+            tmp_target = re_match_cod2.group()
             tmp_parser = tmp_target.split(":")
             self.__time_temp[3], self.__time_temp[4], self.__time_temp[5] = int(tmp_parser[0]), int(tmp_parser[1]), int(
                 tmp_parser[2])
             self.__preferFuture(3)  # 处理倾向于未来时间的情况
 
+        # 时:分 这样的情况，命名为cod3
         rule = self.__regexMap["hh_mm"]
         temp = '?' + self.__rawTimeExpression
-        re_match = re.search(rule, temp)
-        if (re_match):
-            tmp_target = re_match.group()
+        re_match_cod3 = re.search(rule, temp)
+        if (re_match_cod3 and cod2 is None):
+            tmp_target = re_match_cod3.group()
             tmp_parser = tmp_target.split(":")
             self.__time_temp[3], self.__time_temp[4] = int(tmp_parser[0]), int(tmp_parser[1])
             self.__preferFuture(3)  # 处理倾向于未来时间的情况
@@ -393,14 +406,24 @@ class TimeParser:
             self.__time_temp[0], self.__time_temp[1], self.__time_temp[2] = int(tmp_parser[0]), int(tmp_parser[1]), int(
                 tmp_parser[2])
 
-        # mm/dd/yyyy
+        # yyyy/mm/dd 这种情况 cod_y1
+        rule = self.__regexMap["ymd"]
+        cod_y1 = re.search(rule, self.__rawTimeExpression)
+        if (cod_y1):
+            tmp_target = cod_y1.group()
+            tmp_parser = tmp_target.split("/")
+            self.__time_temp[0], self.__time_temp[1], self.__time_temp[2] = int(tmp_parser[0]), int(tmp_parser[1]), int(
+                tmp_parser[2])  # mm/dd/yyyy
+
+        # mm/dd/yyyy  cod_y2
         rule = self.__regexMap["mmddyyyy"]
         re_match = re.search(rule, self.__rawTimeExpression)
-        if (re_match):
+        if (re_match and cod_y1 is None):
             tmp_target = re_match.group()
             tmp_parser = tmp_target.split("/")
             self.__time_temp[1], self.__time_temp[2], self.__time_temp[0] = int(tmp_parser[0]), int(tmp_parser[1]), int(
                 tmp_parser[2])  # mm/dd/yyyy
+
         ##yyyy.mm.dd
         rule = self.__regexMap["yyyymmdd"]
         re_match = re.search(rule, self.__rawTimeExpression)
