@@ -223,8 +223,6 @@ def delKeyword(target, rules):
 def preHandling(target):
     rules = u'\\s+'
     target = delKeyword(target, rules)
-    rules = u'[的]+'
-    target = delKeyword(target, rules)
 
     target = numberTranslator(target)
 
@@ -241,3 +239,11 @@ def preHandling(target):
     if p.search(target):
         target = re.sub(u'上1个', u'下个', target)
     return target
+
+def removeAtFirst(timeString):
+    rules = u'[的]+'
+    timeString = delKeyword(timeString, rules)
+    timeString = re.sub(u'周周', u'周', timeString)
+    timeString = re.sub(u'星期星期', u'星期', timeString)
+    timeString = re.sub(u'礼拜礼拜', u'礼拜', timeString)
+    return timeString

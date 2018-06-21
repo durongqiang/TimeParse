@@ -99,18 +99,28 @@ class TimeResult:
             return self.startTimePoint.toString() + " ->>>>- " + self.endTimePoint.toString()
         return "IS.. NULL"
 
+
+    def toDict(self):
+        if self.isTimePoint:
+            return self.singleTimePoint.toDict()
+        elif self.isTimeInterval:
+            res = dict()
+            res['startTime'] = self.startTimePoint.toDict()
+            res['endTime'] = self.endTimePoint.toDict()
+            return res
+        # 需要确认一下结果的地方
+        return json.dumps("Not a time point")
+
     # 将该类型转换成Json数据类型
     def toJson(self):
         if self.isTimePoint:
-            return self.singleTimePoint.toJson();
+            return self.singleTimePoint.toJson()
         elif self.isTimeInterval:
             res = ""
             res = res + "[" + self.startTimePoint.toJson() + ","
             res = res + self.endTimePoint.toJson() + "]"
             return res
         ###需要确认一下结果的地方
-        # return json.dumps(res)
-
         return json.dumps("Not a time point")
 
     # 将该类型存储转换为list<string>类型
@@ -119,13 +129,13 @@ class TimeResult:
         if self.isTimePoint:
             res.append(self.singleTimePoint.toString())
             return res
-        if self.isTimeInterval:
+        elif self.isTimeInterval:
             res.append(self.startTimePoint.toString())
             res.append('到')
             res.append(self.endTimePoint.toString())
             return res
-        res.add("Is.. NULL")
-        return res
+        else:
+            return ['Is.. NULL']
 
     # 进行代码重构，把TimeResult转换为TimePoint
     def toTimePoint(self):

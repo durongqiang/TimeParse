@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 
 from timeParser.LunarSolarConverter import Lunar, Solar, LunarSolarConverter
-from timeParser.StringPreHandlingModule import preHandling
+from timeParser.StringPreHandlingModule import preHandling, removeAtFirst
 from timeParser.TimePoint import TimePoint
 from timeParser.TimeResult import TimeResult
 from timeParser.get_file_path import read_date_regex, read_festival_regex, read_time_regex, read_timeRegex_dict, read_interval_regex
@@ -39,11 +39,11 @@ class TimeParser:
 
     # 1
     def parseTimeMain(self, timeString):
+        timeString = removeAtFirst(timeString)
         timeResult = TimeResult()
         rule = self.__regexMap['isTimePointWithBar']
         if re.search(rule, timeString):
             timeString = timeString.replace("-", ".")
-        # print(timeString)
         # from XX to XX
         rule = self.__regexMap['isFromToInterval']
         if re.search(rule, timeString):

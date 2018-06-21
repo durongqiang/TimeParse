@@ -13,7 +13,7 @@ Lunar_Festival = ('1-1', '12-30', '1-15', '5-5', '7-7', '9-9', '8-15')
 
 # 获得清明那天的节日
 def get_qingming_day(year):
-    if year > 1700 and year <= 3100:
+    if 1700 < year <= 3100:
         if year == 2232:
             qingming_day = 4
         else:
@@ -71,7 +71,6 @@ class TimePoint:
                 self.isAccurateTo = tp.isAccurateTo
                 self.year, self.month, self.day = tp.year, tp.month, tp.day
                 self.hour, self.minute, self.second = tp.hour, tp.minute, tp.second
-
             else:
                 pass
 
@@ -130,12 +129,28 @@ class TimePoint:
 
         return True
 
+    def toDict(self):
+        res = {}
+        if self.isAccurateTo is None:
+            return {'ans': 'CANNOT UNDERSTAND or INVALID'}
+        else:
+            if self.year is not None:
+                res['year'] = self.year
+                if self.month is not None:
+                    res['month'] = self.month
+                    if self.day is not None:
+                        res['day'] = self.day
+                        if self.hour is not None:
+                            res['hour'] = self.hour
+                            if self.minute is not None:
+                                res['minute'] = self.minute
+                                if self.second is not None:
+                                    res['second'] = self.second
+            return res
+
     # 将此对象转换成json格式字符
     def toJson(self):
-        if self.isAccurateTo is None:
-            return json.dumps("CANNOT UNDERSTAND or INVALID")
-        else:
-            return json.dumps(vars(self))
+        return json.dumps(self.toDict())
 
     # 转换成为一个时间的list
     def toTimeUnitsArray(self):
