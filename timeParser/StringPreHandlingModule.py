@@ -240,6 +240,7 @@ def preHandling(target):
         target = re.sub(u'上1个', u'下个', target)
     return target
 
+
 def removeAtFirst(timeString):
     rules = u'[的]+'
     timeString = delKeyword(timeString, rules)

@@ -9,7 +9,8 @@ from timeParser.LunarSolarConverter import Lunar, Solar, LunarSolarConverter
 from timeParser.StringPreHandlingModule import preHandling, removeAtFirst
 from timeParser.TimePoint import TimePoint
 from timeParser.TimeResult import TimeResult
-from timeParser.get_file_path import read_date_regex, read_festival_regex, read_time_regex, read_timeRegex_dict, read_interval_regex
+from timeParser.get_file_path import read_date_regex, read_festival_regex, read_time_regex, read_timeRegex_dict, \
+    read_interval_regex
 
 
 class TimeParser:

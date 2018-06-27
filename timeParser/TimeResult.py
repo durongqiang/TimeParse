@@ -99,7 +99,6 @@ class TimeResult:
             return self.startTimePoint.toString() + " ->>>>- " + self.endTimePoint.toString()
         return "IS.. NULL"
 
-
     def toDict(self):
         if self.isTimePoint:
             return self.singleTimePoint.toDict()
@@ -147,3 +146,9 @@ class TimeResult:
             return result
         else:
             raise IOError("IllegalArgumentException")
+
+    def isFestival(self):
+        if self.isTimePoint:
+            return self.singleTimePoint.isFestival()
+        else:
+            return None

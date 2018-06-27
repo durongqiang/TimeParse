@@ -7,21 +7,22 @@ from dateutil.relativedelta import relativedelta
 from timeParser.LunarSolarConverter import Solar, LunarSolarConverter
 from timeParser.get_file_path import read_festival_regex
 
+
 def get_festival_dict():
     res = read_festival_regex()
     Solar_Festival = {}
     Lunar_Festival = {}
     for each in res:
         if 'isLunar' in each:
-            Lunar_Festival['{0}-{1}'.format(each['month'],each['day'])]= \
-                each['Regex'].replace(')','').replace('(','').split('|')[-1]
+            Lunar_Festival['{0}-{1}'.format(each['month'], each['day'])] = \
+                each['Regex'].replace(')', '').replace('(', '').split('|')[-1]
         else:
             Solar_Festival['{0}-{1}'.format(each['month'], each['day'])] = \
                 each['Regex'].replace(')', '').replace('(', '').split('|')[-1]
-    return Solar_Festival,Lunar_Festival
+    return Solar_Festival, Lunar_Festival
 
-#构建节日结合
 
+# 构建节日结合
 
 
 # 获得清明那天的节日
@@ -200,24 +201,24 @@ class TimePoint:
     def isFestival(self):
         # 判断是不是合法的日期
         if self.isAccurateTo is None or self.isAccurateTo < 2 or self.isAccurateTo == 6:
-            return False
-        Solar_Festival,Lunar_Festival= get_festival_dict()
+            return None
+        Solar_Festival, Lunar_Festival = get_festival_dict()
         # 判断是不是清明
         if self.month == 4:
             qingmingday = get_qingming_day(self.year)
             if qingmingday == self.day:
-                return True,u'清明节'
+                return u'清明节'
         # 判断是不是在节假日字典当中
         tf = LunarSolarConverter()
         Lunar_day = tf.SolarToLunar(Solar(self.year, self.month, self.day))
         format_str1 = "{0}-{1}".format(self.month, self.day)
         format_str2 = "{0}-{1}".format(Lunar_day.lunarMonth, Lunar_day.lunarDay)
         if format_str1 in Solar_Festival:
-            return True,Solar_Festival[format_str1]
+            return Solar_Festival[format_str1]
         elif format_str2 in Lunar_Festival:
-            return True,Lunar_Festival[format_str2]
+            return Lunar_Festival[format_str2]
         else:
-            return False
+            return None
 
     # 进行TimePoint的加法操作
     # 注意零时间不能和任意时间进行加减
@@ -286,4 +287,3 @@ class TimePoint:
                 return
             else:
                 raise ValueError("Can't add or subtract seconds.Please check the object precise range.\n")
-
