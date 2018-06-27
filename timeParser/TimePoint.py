@@ -4,11 +4,24 @@ from datetime import datetime, timedelta
 
 from dateutil.relativedelta import relativedelta
 
-from .LunarSolarConverter import Solar, LunarSolarConverter
+from timeParser.LunarSolarConverter import Solar, LunarSolarConverter
+from timeParser.get_file_path import read_festival_regex
 
-# 构建节日结合
-Solar_Festival = ('10-1', '5-1', '1-1', '11-11', '12-25', '10-1')
-Lunar_Festival = ('1-1', '12-30', '1-15', '5-5', '7-7', '9-9', '8-15')
+def get_festival_dict():
+    res = read_festival_regex()
+    Solar_Festival = {}
+    Lunar_Festival = {}
+    for each in res:
+        if 'isLunar' in each:
+            Lunar_Festival['{0}-{1}'.format(each['month'],each['day'])]= \
+                each['Regex'].replace(')','').replace('(','').split('|')[-1]
+        else:
+            Solar_Festival['{0}-{1}'.format(each['month'], each['day'])] = \
+                each['Regex'].replace(')', '').replace('(', '').split('|')[-1]
+    return Solar_Festival,Lunar_Festival
+
+#构建节日结合
+
 
 
 # 获得清明那天的节日
@@ -188,18 +201,21 @@ class TimePoint:
         # 判断是不是合法的日期
         if self.isAccurateTo is None or self.isAccurateTo < 2 or self.isAccurateTo == 6:
             return False
+        Solar_Festival,Lunar_Festival= get_festival_dict()
         # 判断是不是清明
         if self.month == 4:
             qingmingday = get_qingming_day(self.year)
             if qingmingday == self.day:
-                return True
+                return True,u'清明节'
         # 判断是不是在节假日字典当中
         tf = LunarSolarConverter()
         Lunar_day = tf.SolarToLunar(Solar(self.year, self.month, self.day))
         format_str1 = "{0}-{1}".format(self.month, self.day)
         format_str2 = "{0}-{1}".format(Lunar_day.lunarMonth, Lunar_day.lunarDay)
-        if format_str1 in Solar_Festival or format_str2 in Lunar_Festival:
-            return True
+        if format_str1 in Solar_Festival:
+            return True,Solar_Festival[format_str1]
+        elif format_str2 in Lunar_Festival:
+            return True,Lunar_Festival[format_str2]
         else:
             return False
 
@@ -270,3 +286,4 @@ class TimePoint:
                 return
             else:
                 raise ValueError("Can't add or subtract seconds.Please check the object precise range.\n")
+

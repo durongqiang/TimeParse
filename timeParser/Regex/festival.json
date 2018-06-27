@@ -10,7 +10,7 @@
     "day": "5"
   },
   {
-    "Regex": "(51|劳动节|劳动)",
+    "Regex": "(51|劳动|劳动节)",
     "month": "5",
     "day": "1"
   },
@@ -41,13 +41,13 @@
     "isLunar": "true"
   },
   {
-    "Regex": "(春节|过年|大年初一|大年初1)",
+    "Regex": "(过年|大年初一|大年初1|春节)",
     "month": "1",
     "day": "1",
     "isLunar": "true"
   },
   {
-    "Regex": "(除夕|大年30|大年三十)",
+    "Regex": "(大年30|大年三十|除夕)",
     "month": "12",
     "day": "30",
     "isLunar": "true"
@@ -71,7 +71,7 @@
     "isLunar": "true"
   },
   {
-    "Regex": "(七夕|7夕)",
+    "Regex": "(7夕|七夕)",
     "month": "7",
     "day": "7",
     "isLunar": "true"
