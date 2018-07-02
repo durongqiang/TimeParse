@@ -1,6 +1,25 @@
 # -*- coding: utf-8 -*-
 import re
 
+regex_wan = re.compile(u'[一二两三四五六七八九123456789]万[一二两三四五六七八九123456789](?!(千|百|十))')
+regex_qian = re.compile(u'[一二两三四五六七八九123456789]千[一二两三四五六七八九123456789](?!(百|十))')
+regex_bai = re.compile(u'[一二两三四五六七八九123456789]百[一二两三四五六七八九123456789](?!十)')
+regex_daxie = re.compile(u'[零一二两三四五六七八九]')
+regex_sunday = re.compile(u'(?<=(周))[天日]|(?<=(星期))[天日]')
+regex_xiaoxie_without_xingqi = re.compile(u'(?<!(星期))0?[0-9]?十[0-9]?')
+regex_xiaoxie_without_zhou = re.compile(u'(?<!(.周))0?[0-9]?十[0-9]?')
+regex_baiwei = re.compile(u'0?[1-9]百[0-9]?[0-9]?')
+regex_qianwei = re.compile(u'0?[1-9]千[0-9]?[0-9]?[0-9]?')
+regex_wanwei = re.compile(u'[0-9]+万[0-9]?[0-9]?[0-9]?[0-9]?')
+regex_fuhao = re.compile(u'.*(，|,)\.*')
+regex_xiage = re.compile(u'下1个')
+regex_shangge = re.compile(u'上1个')
+regex_s_plus = re.compile(u'\\s+')
+regex_de = re.compile(u'[的]+')
+regex_zhouzhou = re.compile(u'周周')
+regex_xqxq = re.compile(u'星期星期')
+regex_lblb = re.compile(u'礼拜礼拜')
+
 '''
     * 方法numberTranslator的辅助方法，可将[零-九]正确翻译为[0-9]
      *
@@ -52,7 +71,7 @@ def wordToNumber(s):
 
 def numberTranslator(target):
     # 处理仅有万位结果
-    cond = re.search(u'[一二两三四五六七八九123456789]万[一二两三四五六七八九123456789](?!(千|百|十))', target)
+    cond = re.search(regex_wan, target)
     while cond is not None:
         tem_str = cond.group()
         num = 0
@@ -60,10 +79,10 @@ def numberTranslator(target):
         if tem_str.__len__() == 2:
             num = num + wordToNumber(tem_str[0]) * 10000 + wordToNumber(tem_str[1]) * 1000
         target = target[0:cond.span()[0]] + str(num) + target[cond.span()[1]:len(target)]
-        cond = re.search(u'[一二两三四五六七八九123456789]万[一二两三四五六七八九123456789](?!(千|百|十))', target)
+        cond = re.search(regex_wan, target)
 
     # 处理仅有千位结果
-    cond = re.search(u'[一二两三四五六七八九123456789]千[一二两三四五六七八九123456789](?!(百|十))', target)
+    cond = re.search(regex_qian, target)
     while cond is not None:
         tem_str = cond.group()
         num = 0
@@ -71,10 +90,10 @@ def numberTranslator(target):
         if tem_str.__len__() == 2:
             num = num + wordToNumber(tem_str[0]) * 1000 + wordToNumber(tem_str[1]) * 100
         target = target[0:cond.span()[0]] + str(num) + target[cond.span()[1]:len(target)]
-        cond = re.search(u'[一二两三四五六七八九123456789]千[一二两三四五六七八九123456789](?!(百|十))', target)
+        cond = re.search(regex_qian, target)
 
     # 处理仅有百位结果
-    cond = re.search(u'[一二两三四五六七八九123456789]百[一二两三四五六七八九123456789](?!十)', target)
+    cond = re.search(regex_bai, target)
     while cond is not None:
         tem_str = cond.group()
         num = 0
@@ -82,24 +101,23 @@ def numberTranslator(target):
         if tem_str.__len__() == 2:
             num = num + wordToNumber(tem_str[0]) * 100 + wordToNumber(tem_str[1]) * 10
         target = target[0:cond.span()[0]] + str(num) + target[cond.span()[1]:len(target)]
-        cond = re.search(u'[一二两三四五六七八九123456789]百[一二两三四五六七八九123456789](?!十)', target)
+        cond = re.search(regex_bai, target)
 
     # 处理大写转化为小写
-    rule = u'[零一二两三四五六七八九]'
 
-    for each in re.finditer(rule, target):
+    for each in re.finditer(regex_daxie, target):
         temp = str(wordToNumber(each.group()))
         target = target[0:each.span()[0]] + str(temp) + target[each.span()[1]:len(target)]
 
     # 处理周天，星期天替换为周7，星期7的情况
-    for each in re.finditer(u'(?<=(周))[天日]|(?<=(星期))[天日]', target):
+    for each in re.finditer(regex_sunday, target):
         temp = str(wordToNumber(each.group()))
         target = target[0:each.span()[0]] + str(temp) + target[each.span()[1]:len(target)]
 
     # 处理正常的数据，从十位开处理
     target = '*' + target
-    cond1 = re.search(u'(?<!(星期))0?[0-9]?十[0-9]?', target)
-    cond2 = re.search(u'(?<!(.周))0?[0-9]?十[0-9]?', target)
+    cond1 = re.search(regex_xiaoxie_without_xingqi, target)
+    cond2 = re.search(regex_xiaoxie_without_zhou, target)
     cond = cond1 and cond2
     while cond is not None:
         tem_str = cond1.group()
@@ -123,13 +141,13 @@ def numberTranslator(target):
             if len(tem_str[1]) != 0:
                 num = num + int(tem_str[1])
         target = target[0:cond.span()[0]] + str(num) + target[cond.span()[1]:len(target)]
-        cond1 = re.search(u'(?<!(星期))0?[0-9]?十[0-9]?', target)
-        cond2 = re.search(u'(?<!(.周))0?[0-9]?十[0-9]?', target)
+        cond1 = re.search(regex_xiaoxie_without_xingqi, target)
+        cond2 = re.search(regex_xiaoxie_without_zhou, target)
         cond = cond1 and cond2
     target = target[1:len(target)]
 
     # 处理百位结果
-    cond = re.search(u'0?[1-9]百[0-9]?[0-9]?', target)
+    cond = re.search(regex_baiwei, target)
     while cond is not None:
         tem_str = cond.group()
         num = 0
@@ -142,10 +160,10 @@ def numberTranslator(target):
             else:
                 num = num + int(tem_str[0]) * 100 + int(tem_str[1])
         target = target[0:cond.span()[0]] + str(num) + target[cond.span()[1]:len(target)]
-        cond = re.search(u'0?[1-9]百[0-9]?[0-9]?', target)
+        cond = re.search(regex_baiwei, target)
 
     # 处理千位结果
-    cond = re.search(u'0?[1-9]百[0-9]?[0-9]?', target)
+    cond = re.search(regex_baiwei, target)
     while cond is not None:
         tem_str = cond.group()
         num = 0
@@ -158,10 +176,10 @@ def numberTranslator(target):
             else:
                 num = num + int(tem_str[0]) * 100 + int(tem_str[1])
         target = target[0:cond.span()[0]] + str(num) + target[cond.span()[1]:len(target)]
-        cond = re.search(u'0?[1-9]百[0-9]?[0-9]?', target)
+        cond = re.search(regex_baiwei, target)
 
     # 处理千位结果
-    cond = re.search(u'0?[1-9]千[0-9]?[0-9]?[0-9]?', target)
+    cond = re.search(regex_qianwei, target)
     while cond is not None:
         tem_str = cond.group()
         num = 0
@@ -174,10 +192,10 @@ def numberTranslator(target):
             else:
                 num = num + int(tem_str[0]) * 1000 + int(tem_str[1])
         target = target[0:cond.span()[0]] + str(num) + target[cond.span()[1]:len(target)]
-        cond = re.search(u'0?[1-9]千[0-9]?[0-9]?[0-9]?', target)
+        cond = re.search(regex_qianwei, target)
 
     # 处理万位结果
-    cond = re.search(u'[0-9]+万[0-9]?[0-9]?[0-9]?[0-9]?', target)
+    cond = re.search(regex_wanwei, target)
     while cond is not None:
         tem_str = cond.group()
         num = 0
@@ -187,7 +205,7 @@ def numberTranslator(target):
         elif tem_str.__len__() == 2:
             num = num + int(tem_str[0]) * 10000 + int(tem_str[1])
         target = target[0:cond.span()[0]] + str(num) + target[cond.span()[1]:len(target)]
-        cond = re.search(u'[0-9]+万[0-9]?[0-9]?[0-9]?[0-9]?', target)
+        cond = re.search(regex_wanwei, target)
 
     return target
 
@@ -221,30 +239,25 @@ def delKeyword(target, rules):
 
 
 def preHandling(target):
-    rules = u'\\s+'
-    target = delKeyword(target, rules)
+    target = delKeyword(target, regex_s_plus)
 
     target = numberTranslator(target)
 
     # 替换掉,.这类符号
-    p = re.compile(u'.*(，|,)\.*')
-    if p.search(target):
-        target = re.sub(u'(，|,|\.)', '', target)
+    if regex_fuhao.search(target):
+        target = re.sub(regex_fuhao, '', target)
     # 替换掉上1个和下1个,替换为上个和下个
-    p = re.compile(u'下1个')
-    if p.search(target):
-        target = re.sub(u'下1个', u'下个', target)
+    if regex_xiage.search(target):
+        target = re.sub(regex_xiage, u'下个', target)
 
-    p = re.compile(u'上1个')
-    if p.search(target):
-        target = re.sub(u'上1个', u'下个', target)
+    if regex_shangge.search(target):
+        target = re.sub(regex_shangge, u'下个', target)
     return target
 
 
 def removeAtFirst(timeString):
-    rules = u'[的]+'
-    timeString = delKeyword(timeString, rules)
-    timeString = re.sub(u'周周', u'周', timeString)
-    timeString = re.sub(u'星期星期', u'星期', timeString)
-    timeString = re.sub(u'礼拜礼拜', u'礼拜', timeString)
+    timeString = delKeyword(timeString, regex_de)
+    timeString = re.sub(regex_zhouzhou, u'周', timeString)
+    timeString = re.sub(regex_xqxq, u'星期', timeString)
+    timeString = re.sub(regex_lblb, u'礼拜', timeString)
     return timeString

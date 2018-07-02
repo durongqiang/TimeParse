@@ -98,9 +98,18 @@ class TimeParser:
         self.delimiter_year_month = re.compile(u'(年|\\.|\\-)')
         self.upup = re.compile(u'上+')
         self.downdown = re.compile(u'下+')
-        # self._______ = re.compile(self.__regexMap['________'])
-        # self._______ = re.compile(self.__regexMap['________'])
-        # self._______ = re.compile(self.__regexMap['________'])
+
+        self.intervalRegexDict = {}
+        for i in range(0, len(self.__intervalJsonArray)):
+            template = self.__intervalJsonArray[i]
+            patternString = template['Regex']
+            self.intervalRegexDict[template['start']+template['end']] = re.compile(patternString)
+
+        self.festivalRegexDict = {}
+        for i in range(0, len(self.__festivalJsonArray)):
+            template = self.__festivalJsonArray[i]
+            patternString = template['Regex']
+            self.festivalRegexDict[template['month']+template['day']] = re.compile(patternString)
 
     # * 新的时间解析入口
     # * @input param timeString 为string类型
@@ -173,7 +182,7 @@ class TimeParser:
         ##查json调取timeString对应的两个时间点
         for i in range(0, len(self.__intervalJsonArray)):
             template = self.__intervalJsonArray[i]
-            patternString = template['Regex']
+            patternString = self.intervalRegexDict[template['start']+template['end']]
             if re.search(patternString, self.__rawTimeExpression):
                 prefix = re.sub(patternString, '', timeString)
                 startTPstr = prefix + template['start']
@@ -276,7 +285,7 @@ class TimeParser:
     def __festivalday(self):
         for i in range(0, len(self.__festivalJsonArray)):
             template = self.__festivalJsonArray[i]
-            patternString = template['Regex']
+            patternString = self.festivalRegexDict[template['month']+template['day']]
             if re.search(patternString, self.__rawTimeExpression):
                 month = template['month']
                 date = template['day']
@@ -285,7 +294,7 @@ class TimeParser:
                         self.__isLunarDate = True
 
                 self.__time_temp[1] = int(month)
-                if re.search(self.qingming, patternString):
+                if re.search(self.qingming, template['Regex']):
                     if self.__time_temp[0] is not -1:
                         self.__time_temp[2] = int(math.floor((self.__time_temp[0] - 2000) * 0.2422 + 4.81) - (
                                 self.__time_temp[0] - 2000) // 4)
