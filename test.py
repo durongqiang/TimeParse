@@ -319,4 +319,12 @@ for (timeExpression, answer, _, festAns) in testCases:
             print(u'测试情况：', answer, u'\n结果：', resultStr)
             raise ValueError(u'测试没有通过')
 
+import time
+startTime = time.time()
+num_iteration = 10
+for i in range(num_iteration):
+    for (timeExpression, answer, _, festAns) in testCases:
+        res = af.parseTimeMain(timeExpression.decode('utf-8'))
+endTime = time.time()
+print('平均解析用时：%f'%((endTime-startTime)/(num_iteration*len(testCases))))
 print(u'测试通过\n')

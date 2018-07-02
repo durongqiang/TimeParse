@@ -33,6 +33,74 @@ class TimeParser:
         self.__intervalJsonArray = read_interval_regex()
         self.__regexMap = read_timeRegex_dict()
         # print(self.__dateRex)
+        self.isTimePointWithBar = re.compile(self.__regexMap['isTimePointWithBar'])
+        self.isFromToInterval = re.compile(self.__regexMap['isFromToInterval'])
+        self.isTermInterval = re.compile(self.__regexMap['isTermInterval'])
+        self.year2digits = re.compile(self.__regexMap['year2digits'])
+        self.year4digits = re.compile(self.__regexMap['year4digits'])
+        self.month = re.compile(self.__regexMap['month'])
+        self.mm_dd = re.compile(self.__regexMap['mm_dd'])
+        self.yy_mm = re.compile(self.__regexMap['yy_mm'])
+        self.day = re.compile(self.__regexMap['day'])
+        self.hour = re.compile(self.__regexMap['hour'])
+        self.hour_pureNumber = re.compile(self.__regexMap['hour_pureNumber'])
+        self.mid_day = re.compile(self.__regexMap['mid_day'])
+        self.afternoon = re.compile(self.__regexMap['afternoon'])
+        self.evening = re.compile(self.__regexMap['evening'])
+        self.minute_number = re.compile(self.__regexMap['minute_number'])
+        self.minute_quarter = re.compile(self.__regexMap['minute_quarter'])
+        self.minute_half = re.compile(self.__regexMap['minute_half'])
+        self.minute_3quarters = re.compile(self.__regexMap['minute_3quarters'])
+        self.second = re.compile(self.__regexMap['second'])
+        self.yy_mm_dd = re.compile(self.__regexMap['yy_mm_dd'])
+        self.yy_c_mm_c_dd = re.compile(self.__regexMap['yyyy:mm:dd'])
+        self.hh_mm = re.compile(self.__regexMap['hh_mm'])
+        self.yyyy_mm_dd = re.compile(self.__regexMap['yyyy_mm_dd'])
+        self.ymd = re.compile(self.__regexMap['ymd'])
+        self.mmddyyyy = re.compile(self.__regexMap['mmddyyyy'])
+        self.yyyymmdd = re.compile(self.__regexMap['yyyymmdd'])
+        self.yyyymmdd_8digits = re.compile(self.__regexMap['yyyymmdd_8digits'])
+        self.days_before = re.compile(self.__regexMap['days_before'])
+        self.days_after = re.compile(self.__regexMap['days_after'])
+        self.weeks_before = re.compile(self.__regexMap['weeks_before'])
+        self.weeks_after = re.compile(self.__regexMap['weeks_after'])
+        self.months_before = re.compile(self.__regexMap['months_before'])
+        self.months_after = re.compile(self.__regexMap['months_after'])
+        self.years_before = re.compile(self.__regexMap['years_before'])
+        self.years_after = re.compile(self.__regexMap['years_after'])
+        self.theYearBeforeLast = re.compile(self.__regexMap['theYearBeforeLast'])
+        self.lastYear = re.compile(self.__regexMap['lastYear'])
+        self.thisYear = re.compile(self.__regexMap['thisYear'])
+        self.nextYear = re.compile(self.__regexMap['nextYear'])
+        self.theYearAfterNext = re.compile(self.__regexMap['theYearAfterNext'])
+        self.lastMonth = re.compile(self.__regexMap['lastMonth'])
+        self.thisMonth = re.compile(self.__regexMap['thisMonth'])
+        self.nextMonth = re.compile(self.__regexMap['nextMonth'])
+        self.theDayBeforeYesterday = re.compile(self.__regexMap['theDayBeforeYesterday'])
+        self.yesterday = re.compile(self.__regexMap['yesterday'])
+        self.today = re.compile(self.__regexMap['today'])
+        self.tomorrow = re.compile(self.__regexMap['tomorrow'])
+        self.theDayAfterTomorrow = re.compile(self.__regexMap['theDayAfterTomorrow'])
+        self.lastWeek = re.compile(self.__regexMap['lastWeek'])
+        self.nextWeek = re.compile(self.__regexMap['nextWeek'])
+        self.weekDay_cod1 = re.compile(self.__regexMap['weekDay_cod1'])
+        self.weekDay_cod2 = re.compile(self.__regexMap['weekDay_cod2'])
+        self.lastDayOfSomething = re.compile(self.__regexMap['lastDayOfSomething'])
+        self.lunar_mmdd = re.compile(self.__regexMap['lunar_mmdd'])
+        self.lunar_1mdd = re.compile(self.__regexMap['lunar_1mdd'])
+        self.lunar_mm2d = re.compile(self.__regexMap['lunar_mm2d'])
+        self.lunar = re.compile(self.__regexMap['lunar'])
+        self.dplus = re.compile('^[\\d]+$')
+        self.dplus_simple = re.compile('[\\d]+')
+        self.qingming = re.compile(u'清明')
+        self.delimiter_month_day = re.compile(u'(月|\\.|\\-|/)')
+        self.mon_year_begin = re.compile(u'(月初?)|(大年初?)')
+        self.delimiter_year_month = re.compile(u'(年|\\.|\\-)')
+        self.upup = re.compile(u'上+')
+        self.downdown = re.compile(u'下+')
+        # self._______ = re.compile(self.__regexMap['________'])
+        # self._______ = re.compile(self.__regexMap['________'])
+        # self._______ = re.compile(self.__regexMap['________'])
 
     # * 新的时间解析入口
     # * @input param timeString 为string类型
@@ -42,23 +110,20 @@ class TimeParser:
     def parseTimeMain(self, timeString):
         timeString = removeAtFirst(timeString)
         timeResult = TimeResult()
-        rule = self.__regexMap['isTimePointWithBar']
-        if re.search(rule, timeString):
+        if re.match(self.isTimePointWithBar, timeString):
             timeString = timeString.replace("-", ".")
         # from XX to XX
-        rule = self.__regexMap['isFromToInterval']
-        if re.search(rule, timeString):
-            splitResults = re.split(rule, timeString)
+        if re.search(self.isFromToInterval, timeString):
+            splitResults = re.split(self.isFromToInterval, timeString)
             ##如果前面是纯数字，后面的那个带单位，把单位也赋给前面
-            if re.search("^[\\d]+$", splitResults[0]):
-                temp = re.split("[\\d]+", splitResults[-1])
+            if re.search(self.dplus, splitResults[0]):
+                temp = re.split(self.dplus_simple, splitResults[-1])
                 splitResults[0] = splitResults[0] + temp[len(temp) - 1]
             start = self.parseTimePoint(splitResults[0])
             end = self.__parseTimePoint(splitResults[-1], start)
             timeResult = TimeResult(tp1=start, tp2=end)
         ## 周末，早上这种，先把短语替换成“xx到xx”这种，再按时间段解析
-        rule = self.__regexMap['isTermInterval']
-        if re.search(rule, timeString):
+        if re.search(self.isTermInterval, timeString):
             timeResult = self.__parseTimeInterval(timeString)
         ##剩下全是时间点
         if timeResult.isTimePoint is False and timeResult.isTimeInterval is False:
@@ -171,7 +236,7 @@ class TimeParser:
 
         self.__rawTimeExpression = preHandling(timeString)
         ##如果当前字符串只是一个数字，则用这个值替换上文的最后一位有效时间
-        if re.search(u"^[\\d]+$", timeString):
+        if re.search(self.dplus, timeString):
             endTP = TimePoint(tp=context)
             endTP.setUnitValue(context.isAccurateTo, int(timeString))
             return endTP
@@ -184,8 +249,7 @@ class TimeParser:
     # 该方法识别时间表达式单元的年字段
     # 03#
     def __norm_setyear(self):
-        rule = self.__regexMap["year2digits"]  # 识别两位数字的年
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.year2digits, self.__rawTimeExpression)
         if re_match:
             self.__time_temp[0] = int(re_match.group())
             if self.__time_temp[0] >= 0 and self.__time_temp[0] < 100:
@@ -194,8 +258,7 @@ class TimeParser:
                 else:
                     self.__time_temp[0] = self.__time_temp[0] + 1900  # 否则表示1900年以后的年份
         # 识别三位数和四位数表示的年，如果有，覆盖之前两位结果
-        rule = self.__regexMap["year4digits"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.year4digits, self.__rawTimeExpression)
         if re_match:
             self.__time_temp[0] = int(re_match.group())
 
@@ -203,8 +266,7 @@ class TimeParser:
     # 该方法识别时间表达式单元的月字段
     # 04
     def __norm_setmonth(self):
-        rule = self.__regexMap["month"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.month, self.__rawTimeExpression)
         if re_match:
             self.__time_temp[1] = int(re_match.group())
             self.__preferFuture(1)  # 倾向于未来时间的情况
@@ -223,7 +285,7 @@ class TimeParser:
                         self.__isLunarDate = True
 
                 self.__time_temp[1] = int(month)
-                if re.search(u"清明", patternString):
+                if re.search(self.qingming, patternString):
                     if self.__time_temp[0] is not -1:
                         self.__time_temp[2] = int(math.floor((self.__time_temp[0] - 2000) * 0.2422 + 4.81) - (
                                 self.__time_temp[0] - 2000) // 4)
@@ -241,12 +303,10 @@ class TimeParser:
     # 年-月-日 兼容模糊写法, 诸如11月2，11-2，11.2等等
     # 06
     def __norm_setmonth_fuzzyday(self):
-        rule = self.__regexMap["mm_dd"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.mm_dd, self.__rawTimeExpression)
         if re_match:
             matchStr = re_match.group()
-            p = u"(月|\\.|\\-|/)"
-            m = re.search(p, matchStr)
+            m = re.search(self.delimiter_month_day, matchStr)
             if m:
                 month = matchStr[0:m.span()[0]]
                 date = matchStr[m.span()[1]:len(matchStr)]
@@ -254,12 +314,10 @@ class TimeParser:
                 self.__time_temp[2] = int(date)
                 self.__preferFuture(1)  # 倾向于未来时间的情况
         # 第二种情况进行处理
-        rule = self.__regexMap["yy_mm"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.yy_mm, self.__rawTimeExpression)
         if re_match:
             matchStr = re_match.group()
-            p = u"(年|\\.|\\-)"
-            m = re.search(p, matchStr)
+            m = re.search(self.delimiter_year_month, matchStr)
             if m:
                 year = matchStr[0:m.span()[0]]
                 month = matchStr[m.span()[1]:len(matchStr)]
@@ -273,8 +331,7 @@ class TimeParser:
     # 该方法识别时间表达式单元的日字段，x/xx 号/日
     # 07
     def __norm_setday(self):
-        rule = self.__regexMap["day"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.day, self.__rawTimeExpression)
         if re_match:
             self.__time_temp[2] = int(re_match.group())
             self.__preferFuture(2)  # 倾向于未来时间的情况
@@ -283,14 +340,12 @@ class TimeParser:
     # 该方法识别时间表达式单元的时字段
     # 08
     def __norm_sethour(self):
-        rule = self.__regexMap["hour"]
         temp = '?' + self.__rawTimeExpression
-        re_match = re.search(rule, temp)
+        re_match = re.search(self.hour, temp)
         if re_match:
             self.__time_temp[3] = int(re_match.group())
 
-        rule = self.__regexMap["hour_pureNumber"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.hour_pureNumber, self.__rawTimeExpression)
         if re_match:
             self.__time_temp[3] = int(re_match.group())
         #
@@ -301,20 +356,17 @@ class TimeParser:
         # 3.晚上/傍晚/晚间/晚1-11点视为13-23点，12点视为0点
         # 4.0-11点pm/PM视为12-23点
 
-        rule = self.__regexMap["mid_day"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.mid_day, self.__rawTimeExpression)
         if re_match:
             if self.__time_temp[3] >= 0 and self.__time_temp[3] <= 10:
                 self.__time_temp[3] = self.__time_temp[3] + 12
 
-        rule = self.__regexMap["afternoon"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.afternoon, self.__rawTimeExpression)
         if re_match:
             if self.__time_temp[3] >= 0 and self.__time_temp[3] <= 11:
                 self.__time_temp[3] = self.__time_temp[3] + 12
 
-        rule = self.__regexMap["evening"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.evening, self.__rawTimeExpression)
         if re_match:
             if self.__time_temp[3] >= 1 and self.__time_temp[3] <= 11:
                 self.__time_temp[3] = self.__time_temp[3] + 12
@@ -327,28 +379,24 @@ class TimeParser:
     # 该方法识别时间表达式单元的分字段
     # 09
     def __norm_setminute(self):
-        rule = self.__regexMap["minute_number"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.minute_number, self.__rawTimeExpression)
         if re_match:
             if re_match.group() is not "":
                 self.__time_temp[4] = int(re_match.group())
                 self.__preferFuture(4)  # 处理倾向于未来时间的情况
 
         # 加对一刻，半，3刻的正确识别（1刻为15分，半为30分，3刻为45分）
-        rule = self.__regexMap["minute_quarter"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.minute_quarter, self.__rawTimeExpression)
         if re_match:
             self.__time_temp[4] = 15
             self.__preferFuture(4)
 
-        rule = self.__regexMap["minute_half"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.minute_half, self.__rawTimeExpression)
         if re_match:
             self.__time_temp[4] = 30
             self.__preferFuture(4)  # 处理倾向于未来时间的情况
 
-        rule = self.__regexMap["minute_3quarters"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.minute_3quarters, self.__rawTimeExpression)
         if re_match:
             self.__time_temp[4] = 45
             self.__preferFuture(4)  # 处理倾向于未来时间的情况
@@ -359,8 +407,7 @@ class TimeParser:
     def __norm_setsecond(self):
         # 添加了省略“分”说法的时间
         # 如17点15分32
-        rule = self.__regexMap["second"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.second, self.__rawTimeExpression)
         if re_match:
             self.__time_temp[5] = int(re_match.group())
 
@@ -369,9 +416,8 @@ class TimeParser:
     # 011#
     def __norm_setTotal(self):
         # 年:月:日 这样的情况，命名为cod1
-        rule = self.__regexMap["yyyy:mm:dd"]
         temp = self.__rawTimeExpression
-        match_cod1 = re.search(rule, temp)
+        match_cod1 = re.search(self.yy_c_mm_c_dd, temp)
         if match_cod1:
             tmp_target = match_cod1.group()
             tmp_parser = tmp_target.split(":")
@@ -379,9 +425,8 @@ class TimeParser:
                 tmp_parser[2])
 
         # 时:分:秒 这样的情况，命名为cod2
-        rule = self.__regexMap["yy_mm_dd"]
         temp = '?' + self.__rawTimeExpression
-        re_match_cod2 = re.search(rule, temp)
+        re_match_cod2 = re.search(self.yy_mm_dd, temp)
         cod2 = re_match_cod2 and match_cod1 is None
         if cod2:
             tmp_target = re_match_cod2.group()
@@ -391,17 +436,15 @@ class TimeParser:
             self.__preferFuture(3)  # 处理倾向于未来时间的情况
 
         # 时:分 这样的情况，命名为cod3
-        rule = self.__regexMap["hh_mm"]
         temp = '?' + self.__rawTimeExpression
-        re_match_cod3 = re.search(rule, temp)
+        re_match_cod3 = re.search(self.hh_mm, temp)
         if re_match_cod3 and cod2 is None:
             tmp_target = re_match_cod3.group()
             tmp_parser = tmp_target.split(":")
             self.__time_temp[3], self.__time_temp[4] = int(tmp_parser[0]), int(tmp_parser[1])
             self.__preferFuture(3)  # 处理倾向于未来时间的情况
 
-        rule = self.__regexMap["yyyy_mm_dd"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.yyyy_mm_dd, self.__rawTimeExpression)
         if re_match:
             tmp_target = re_match.group()
             tmp_parser = tmp_target.split("-")
@@ -409,8 +452,7 @@ class TimeParser:
                 tmp_parser[2])
 
         # yyyy/mm/dd 这种情况 cod_y1
-        rule = self.__regexMap["ymd"]
-        cod_y1 = re.search(rule, self.__rawTimeExpression)
+        cod_y1 = re.search(self.ymd, self.__rawTimeExpression)
         if cod_y1:
             tmp_target = cod_y1.group()
             tmp_parser = tmp_target.split("/")
@@ -418,8 +460,7 @@ class TimeParser:
                 tmp_parser[2])  # mm/dd/yyyy
 
         # mm/dd/yyyy  cod_y2
-        rule = self.__regexMap["mmddyyyy"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.mmddyyyy, self.__rawTimeExpression)
         if re_match and cod_y1 is None:
             tmp_target = re_match.group()
             tmp_parser = tmp_target.split("/")
@@ -427,8 +468,7 @@ class TimeParser:
                 tmp_parser[2])  # mm/dd/yyyy
 
         ##yyyy.mm.dd
-        rule = self.__regexMap["yyyymmdd"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.yyyymmdd, self.__rawTimeExpression)
         if re_match:
             tmp_target = re_match.group()
             tmp_parser = tmp_target.split(".")
@@ -436,8 +476,7 @@ class TimeParser:
                 tmp_parser[2])
 
         ##yyyymmdd, pure number
-        rule = self.__regexMap["yyyymmdd_8digits"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.yyyymmdd_8digits, self.__rawTimeExpression)
         if re_match:
             tmp_target = re_match.group()
             leng = len(tmp_target)
@@ -454,57 +493,49 @@ class TimeParser:
         time_now = datetime.now()
         flag = [False, False, False]
         # 在“天之前”的数字
-        rule = self.__regexMap["days_before"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.days_before, self.__rawTimeExpression)
         if re_match:
             flag[2] = True
             day_decrease = int(re_match.group())
             time_now = time_now - relativedelta(days=day_decrease)
         # 在“天之后”的数字
-        rule = self.__regexMap["days_after"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.days_after, self.__rawTimeExpression)
         if re_match:
             flag[2] = True
             day_increase = int(re_match.group())
             time_now = time_now + relativedelta(days=day_increase)
         # 在“周之前”的数字
-        rule = self.__regexMap["weeks_before"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.weeks_before, self.__rawTimeExpression)
         if re_match:
             flag[2] = True
             week_decrease = int(re_match.group())
             time_now = time_now - relativedelta(weeks=week_decrease)
         # 在“周之后”的数字
-        rule = self.__regexMap["weeks_after"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.weeks_after, self.__rawTimeExpression)
         if re_match:
             flag[2] = True
             week_increase = int(re_match.group())
             time_now = time_now + relativedelta(weeks=week_increase)
         # 在“月之前”的数字
-        rule = self.__regexMap["months_before"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.months_before, self.__rawTimeExpression)
         if re_match:
             flag[1] = True
             month_decrease = int(re_match.group())
             time_now = time_now - relativedelta(months=month_decrease)
         # 在“月之后”的数字
-        rule = self.__regexMap["months_after"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.months_after, self.__rawTimeExpression)
         if re_match:
             flag[1] = True
             month_increase = int(re_match.group())
             time_now = time_now + relativedelta(months=month_increase)
         # 在“年之前”的数字
-        rule = self.__regexMap["years_before"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.years_before, self.__rawTimeExpression)
         if re_match:
             flag[0] = True
             year_decrease = int(re_match.group())
             time_now = time_now - relativedelta(years=year_decrease)
         # 在“年之后”的数字
-        rule = self.__regexMap["years_after"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.years_after, self.__rawTimeExpression)
         if re_match:
             flag[0] = True
             year_increase = int(re_match.group())
@@ -525,96 +556,82 @@ class TimeParser:
         time_now = datetime.now()
         flag = [False, False, False]
         # 在“年之后”的数字
-        rule = self.__regexMap["theYearBeforeLast"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.theYearBeforeLast, self.__rawTimeExpression)
         if re_match:
             flag[0] = True
             num_increase = re_match.span()[1] - re_match.span()[0]
             time_now = time_now - relativedelta(years=num_increase)
 
-        rule = self.__regexMap["lastYear"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.lastYear, self.__rawTimeExpression)
         if re_match:
             flag[0] = True
             time_now = time_now - relativedelta(years=1)
 
-        rule = self.__regexMap["thisYear"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.thisYear, self.__rawTimeExpression)
         if re_match:
             flag[0] = True
             time_now = time_now + relativedelta(years=0)
 
-        rule = self.__regexMap["nextYear"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.nextYear, self.__rawTimeExpression)
         if re_match:
             flag[0] = True
             time_now = time_now + relativedelta(years=1)
 
-        rule = self.__regexMap["theYearAfterNext"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.theYearAfterNext, self.__rawTimeExpression)
         if re_match:
             flag[0] = True
             num_increase_days = re_match.span()[1] - re_match.span()[0]
             time_now = time_now + relativedelta(years=num_increase_days)
 
-        rule = self.__regexMap["lastMonth"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.lastMonth, self.__rawTimeExpression)
         if re_match:
             flag[1] = True
-            subMatch = re.search(u"上+", re_match.group())
+            subMatch = re.search(self.upup, re_match.group())
             if subMatch:
                 num_increase_days = subMatch.span()[1] - subMatch.span()[0]
                 time_now = time_now - relativedelta(months=num_increase_days)
 
-        rule = self.__regexMap["thisMonth"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.thisMonth, self.__rawTimeExpression)
         if re_match:
             flag[1] = True
             time_now = time_now + relativedelta(months=0)
 
-        rule = self.__regexMap["nextMonth"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.nextMonth, self.__rawTimeExpression)
         if re_match:
             flag[1] = True
-            subMatch = re.search(u"下+", re_match.group())
+            subMatch = re.search(self.downdown, re_match.group())
             if subMatch:
                 num_increase_days = subMatch.span()[1] - subMatch.span()[0]
                 time_now = time_now + relativedelta(months=num_increase_days)
 
-        rule = self.__regexMap["theDayBeforeYesterday"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.theDayBeforeYesterday, self.__rawTimeExpression)
         if re_match:
             flag[2] = True
             num_decrease_days = re_match.span()[1] - re_match.span()[0]
             time_now = time_now - relativedelta(days=num_decrease_days)
 
-        rule = self.__regexMap["yesterday"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.yesterday, self.__rawTimeExpression)
         if re_match:
             flag[2] = True
             time_now = time_now - relativedelta(days=1)
 
-        rule = self.__regexMap["today"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.today, self.__rawTimeExpression)
         if re_match:
             flag[2] = True
             time_now = time_now - relativedelta(days=0)
 
-        rule = self.__regexMap["tomorrow"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.tomorrow, self.__rawTimeExpression)
         if re_match:
             flag[2] = True
             time_now = time_now + relativedelta(days=1)
 
-        rule = self.__regexMap["theDayAfterTomorrow"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.theDayAfterTomorrow, self.__rawTimeExpression)
         if re_match:
             flag[2] = True
             num_increase_days = re_match.span()[1] - re_match.span()[0]
             time_now = time_now + relativedelta(days=num_increase_days)
 
-        rule = self.__regexMap["lastWeek"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.lastWeek, self.__rawTimeExpression)
         if re_match:
             flag[2] = True
             try:
@@ -628,13 +645,12 @@ class TimeParser:
                     time_now = time_now - timedelta(days=time_now.isoweekday()) + relativedelta(days=weekday)
             else:
                 self.__isWeek = True
-            subMatch = re.search(u"上+", re_match.group())
+            subMatch = re.search(self.upup, re_match.group())
             if subMatch:
                 num_decrease = subMatch.span()[1] - subMatch.span()[0]
                 time_now = time_now - relativedelta(weeks=num_decrease)
 
-        rule = self.__regexMap["nextWeek"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.nextWeek, self.__rawTimeExpression)
         if re_match:
             flag[2] = True
             try:
@@ -648,15 +664,13 @@ class TimeParser:
                     time_now = time_now - timedelta(days=time_now.isoweekday()) + relativedelta(days=weekday)
             else:
                 self.__isWeek = True
-            subMatch = re.search(u"下+", re_match.group())
+            subMatch = re.search(self.downdown, re_match.group())
             if subMatch:
                 num_decrease = subMatch.span()[1] - subMatch.span()[0]
                 time_now = time_now + relativedelta(weeks=num_decrease)
 
-        rule = self.__regexMap["weekDay_cod1"]
-        rule2 = self.__regexMap["weekDay_cod2"]
-        re_match = re.search(rule, self.__rawTimeExpression)
-        re_match2 = re.search(rule2, self.__rawTimeExpression)
+        re_match = re.search(self.weekDay_cod1, self.__rawTimeExpression)
+        re_match2 = re.search(self.weekDay_cod2, self.__rawTimeExpression)
         if re_match and re_match2:
             flag[2] = True
             try:
@@ -679,8 +693,7 @@ class TimeParser:
 
     # 014
     def __norm_setLastDayOfSomething(self):
-        rule = self.__regexMap['lastDayOfSomething']
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.lastDayOfSomething, self.__rawTimeExpression)
         if re_match:
             if self.__timeBaseArray[1] is not -1 or self.__time_temp[1] is not -1:
                 context_year, context_month = self.__timeBaseArray[0], self.__timeBaseArray[1]
@@ -700,18 +713,16 @@ class TimeParser:
     def __norm_lunarCalendar(self):
         month_lunar = -1
         day_lunar = -1
-        rule = self.__regexMap["lunar_mmdd"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.lunar_mmdd, self.__rawTimeExpression)
         if re_match:
             strArr = re_match.group().split(u"月初")
             month_lunar = int(strArr[0])
             day_lunar = int(strArr[1])
             self.__isLunarDate = True
         # 正月各种
-        rule = self.__regexMap["lunar_1mdd"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.lunar_1mdd, self.__rawTimeExpression)
         if re_match:
-            strArr = re.split(u"(月初?)|(大年初?)", re_match.group())
+            strArr = re.split(self.mon_year_begin, re_match.group())
             if strArr[0] is u"腊" or (u'大年' in re_match.group() and u'大年初' not in re_match.group()):
                 month_lunar = 12
             else:
@@ -720,8 +731,7 @@ class TimeParser:
             day_lunar = int(strArr[-1])
             self.__isLunarDate = True
             # 几月廿几，农历特有
-        rule = self.__regexMap["lunar_mm2d"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.lunar_mm2d, self.__rawTimeExpression)
         if re_match:
             strArr = re_match.group().split(u"月廿")
             month_lunar = int(strArr[0])
@@ -732,8 +742,7 @@ class TimeParser:
                 day_lunar = day_lunar + 20
             self.__isLunarDate = True
         # 注明农历
-        rule = self.__regexMap["lunar"]
-        re_match = re.search(rule, self.__rawTimeExpression)
+        re_match = re.search(self.lunar, self.__rawTimeExpression)
         if re_match or (self.__isLunarDate and month_lunar is -1 and day_lunar is -1):
             self.__isLunarDate = True
             month_lunar = self.__time_temp[1]
@@ -762,11 +771,10 @@ class TimeParser:
         self.__time_temp[2] = solar_res.solarDay
 
     def __norm_qinming(self):
-        rule = u'清明'
-        if re.search(rule, self.__rawTimeExpression):
+        if re.search(self.qingming, self.__rawTimeExpression):
             if self.__time_temp[0] is not -1:
                 year = self.__time_temp[0]
-                if year > 1700 and year <= 3100:
+                if 1700 < year <= 3100:
                     if year == 2232:
                         qingming_day = 4
                     else:
